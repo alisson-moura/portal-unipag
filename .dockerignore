@@ -1,0 +1,38 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Node modules
+node_modules
+**/node_modules/
+
+# Build artifacts for both apps
+dist
+**/dist/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+logs/
+
+# Environment variables
+.env
+.env.*
+*.env
+
+# Local development files
+.DS_Store
+.vscode/
+npm-debug.log
+yarn-error.log
+coverage/
+.idea/
+
+# Editor/OS specific files
+*.swp
+*.bak
+*~
+Thumbs.db
