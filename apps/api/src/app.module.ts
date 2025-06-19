@@ -1,11 +1,11 @@
 import {join} from "node:path";
 import {Module} from '@nestjs/common';
 import {ServeStaticModule} from '@nestjs/serve-static';
-import {AppController} from './app.controller';
-import {AppService} from './app.service';
 import {CeopagModule} from './ceopag/ceopag.module';
 import {ConfigModule} from '@nestjs/config';
 import {envSchema} from './config/env.schema';
+import { PrismaService } from './prisma/prisma.service';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
     imports: [
@@ -24,9 +24,10 @@ import {envSchema} from './config/env.schema';
             exclude: ["/api*"],
             rootPath: join(__dirname, "..", "public")
         }),
-        CeopagModule],
-    controllers: [AppController],
-    providers: [AppService],
+        CeopagModule,
+        PrismaModule],
+    controllers: [],
+    providers: [],
 })
 export class AppModule {
 }
