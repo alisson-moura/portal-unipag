@@ -29,6 +29,9 @@ export class VendedorDto {
   @ApiProperty()
   data_contratacao: Date;
 
+  @ApiProperty()
+  ativo: boolean;
+
   @ApiProperty({ type: EstabelecimentoDto, isArray: true })
   estabelecimentos: EstabelecimentoDto[];
 }

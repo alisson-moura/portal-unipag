@@ -9,19 +9,20 @@ datasource db {
 }
 
 model Vendedor {
-  id               String          @id @default(uuid())
+  id               String            @id @default(uuid())
   nome             String
-  email            String          @unique
-  data_contratacao  DateTime        @default(now())
+  email            String            @unique
+  data_contratacao DateTime          @default(now())
+  ativo            Boolean           @default(true)
   estabelecimentos Estabelecimento[]
 
   @@map("vendedores")
 }
 
 model Estabelecimento {
-  id                 Int    @id
-  vendedor_id        String
-  vendedor           Vendedor  @relation(fields: [vendedor_id], references: [id])
+  id          Int      @id
+  vendedor_id String
+  vendedor    Vendedor @relation(fields: [vendedor_id], references: [id])
 
   @@unique([id])
   @@map("estabelecimentos")

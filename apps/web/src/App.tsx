@@ -1,10 +1,16 @@
-import { Button } from "@/components/ui/button"
+import { QueryClientProvider } from "@tanstack/react-query"
+import { Toaster } from "@/components/ui/sonner"
+import { queryClient } from "./lib/query-client"
+import { ListaVendedores } from "./components/vendedores/lista"
 
 function App() {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center">
-      <Button>Click me</Button>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4 antialiased">
+        <ListaVendedores/>
+      </div>
+      <Toaster />
+    </QueryClientProvider>
   )
 }
 
