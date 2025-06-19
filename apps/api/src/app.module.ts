@@ -6,6 +6,7 @@ import {ConfigModule} from '@nestjs/config';
 import {envSchema} from './config/env.schema';
 import { PrismaService } from './prisma/prisma.service';
 import { PrismaModule } from './prisma/prisma.module';
+import { VendedorModule } from './vendedor/vendedor.module';
 
 @Module({
     imports: [
@@ -25,7 +26,8 @@ import { PrismaModule } from './prisma/prisma.module';
             rootPath: join(__dirname, "..", "public")
         }),
         CeopagModule,
-        PrismaModule],
+        PrismaModule,
+        VendedorModule],
     controllers: [],
     providers: [],
 })
