@@ -1,0 +1,1 @@
+{"type":"object","properties":{"mdr":{"type":"number"},"tpv":{"type":"number"},"rav":{"type":"number"},"liquido":{"type":"number"}},"required":["mdr","tpv","rav","liquido"],"x-readme-ref-name":"TotaisDto"}

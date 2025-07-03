@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge"
 
-type Color = "green" | "red" 
+type Color = "green" | "red" | string
 
 const colorVariants: Record<Color, string> = {
   green: "bg-green-500",

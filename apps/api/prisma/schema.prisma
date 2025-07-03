@@ -4,26 +4,39 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
-model Vendedor {
+enum Role {
+  ADMINISTRADOR
+  VENDEDOR
+}
+
+model Usuario {
   id               String            @id @default(uuid())
   nome             String
   email            String            @unique
-  data_contratacao DateTime          @default(now())
+  senha            String
+  role             Role
+  criado_em        DateTime          @default(now())
   ativo            Boolean           @default(true)
   estabelecimentos Estabelecimento[]
 
-  @@map("vendedores")
+  @@map("usuarios")
 }
 
 model Estabelecimento {
-  id          Int      @id
-  vendedor_id String
-  vendedor    Vendedor @relation(fields: [vendedor_id], references: [id])
+  estabelecimento_id Int      @id
+  vendedor_id        String
+  taxa_comissao      Int      @default(20)
+  numero_documento   String
+  razao_social       String
+  nome               String
+  status             Int      @default(1)
+  atribuido_em       DateTime @default(now())
+  vendedor           Usuario  @relation(fields: [vendedor_id], references: [id])
 
-  @@unique([id])
+  @@unique([estabelecimento_id])
   @@map("estabelecimentos")
 }

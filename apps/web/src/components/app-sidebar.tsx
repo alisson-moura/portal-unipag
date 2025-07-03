@@ -1,0 +1,98 @@
+import { Link, useLocation } from 'react-router-dom';
+import { Home, Users, Store, CreditCard, Wallet, User } from "lucide-react"
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+} from "@/components/ui/sidebar"
+import { NavUser } from './nav-user';
+
+const navItems = [
+  { title: "Dashboard", url: "/admin", icon: Home },
+  {
+    title: "Recebimentos", icon: Wallet, items: [
+      { title: "Vendedor", url: "/admin/financeiro/vendedores", icon: User },
+      { title: "Estabelecimento", url: "/admin/financeiro/estabelecimentos", icon: Store }
+    ]
+  },
+  { title: "Vendedores", url: "/admin/vendedores", icon: Users },
+  { title: "Estabelecimentos", url: "/admin/estabelecimentos", icon: Store },
+]
+
+export function AppSidebar() {
+  const location = useLocation();
+
+  return (
+    <Sidebar>
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" asChild>
+              <Link to="/admin">
+                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                  <CreditCard className="size-4" />
+                </div>
+                <div className="flex flex-col gap-0.5 leading-none">
+                  <span className="font-medium">Portal Unipag</span>
+                  <span className="">v1.0.0</span>
+                </div>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Menu</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {navItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton isActive={location.pathname == item.url} asChild>
+                    {item.url ?
+                      <Link to={item.url}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link> :
+                      <span>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </span>
+                    }
+                  </SidebarMenuButton>
+                  {item.items && item.items.length > 0 && (
+                    <SidebarMenuSub>
+                      {item.items.map((item) => (
+                        <SidebarMenuSubItem key={item.title}>
+                          <SidebarMenuSubButton asChild isActive={location.pathname == item.url}>
+                            <Link to={item.url}>
+                              <item.icon />
+                              <span>{item.title}</span>
+                            </Link>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  )}
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarFooter>
+        <NavUser />
+      </SidebarFooter>
+    </Sidebar>
+  )
+}

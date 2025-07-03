@@ -14,6 +14,8 @@ export const envSchema = z.object({
   MOVINGPAY_PREFIX: z.string().default('api'),
   MOVINGPAY_API_EMAIL: z.string().email(),
   MOVINGPAY_API_PASSWORD: z.string(),
+  AUTH_JWT_SECRET: z.string(),
+  AUTH_JWT_EXPIRES_IN: z.string(),
 });
 
 export type Env = z.infer<typeof envSchema>;

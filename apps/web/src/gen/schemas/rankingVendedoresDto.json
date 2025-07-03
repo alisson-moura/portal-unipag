@@ -1,0 +1,1 @@
+{"type":"object","properties":{"id":{"type":"string"},"nome":{"type":"string"},"mdr":{"type":"number"}},"required":["id","nome","mdr"],"x-readme-ref-name":"RankingVendedoresDto"}

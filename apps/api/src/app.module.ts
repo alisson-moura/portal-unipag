@@ -5,7 +5,10 @@ import { CeopagModule } from './ceopag/ceopag.module';
 import { ConfigModule } from '@nestjs/config';
 import { envSchema } from './config/env.schema';
 import { PrismaModule } from './prisma/prisma.module';
+import { UsuarioModule } from './usuario/usuario.module';
+import { AuthModule } from './auth/auth.module';
 import { VendedorModule } from './vendedor/vendedor.module';
+import { RelatoriosModule } from './relatorios/relatorios.module';
 
 @Module({
   imports: [
@@ -22,10 +25,14 @@ import { VendedorModule } from './vendedor/vendedor.module';
     ServeStaticModule.forRoot({
       exclude: ['/api*'],
       rootPath: join(__dirname, '..', 'public'),
+      renderPath: '/',
     }),
-    CeopagModule,
     PrismaModule,
+    AuthModule,
+    CeopagModule,
+    UsuarioModule,
     VendedorModule,
+    RelatoriosModule,
   ],
   controllers: [],
   providers: [],

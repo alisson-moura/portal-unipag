@@ -1,0 +1,1207 @@
+openapi: 3.0.0
+paths:
+  /auth/login:
+    post:
+      operationId: AuthController_login
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestLoginDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseLoginDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 400
+                  message:
+                    type: string
+                    example: Bad Request
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      tags:
+        - Auth
+  /auth/perfil:
+    get:
+      operationId: AuthController_getProfile
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPayloadDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      security:
+        - bearer: []
+      tags:
+        - Auth
+  /usuarios:
+    post:
+      operationId: UsuarioController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUsuarioDto'
+      responses:
+        '201':
+          description: ''
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      security:
+        - bearer: []
+      summary: Cadastra um novo usuário no sistema
+      tags:
+        - Usuario
+  /usuarios/{id}:
+    get:
+      operationId: UsuarioController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID do usuário
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      security:
+        - bearer: []
+      summary: Dados do usuário
+      tags:
+        - Usuario
+    patch:
+      operationId: UsuarioController_alterarStatus
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlterarStatusDto'
+      responses:
+        '200':
+          description: ''
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      security:
+        - bearer: []
+      summary: Atualiza o status
+      tags:
+        - Usuario
+  /api/ceopag/estabelecimentos:
+    get:
+      operationId: CeoPagController_estabelecimentos
+      parameters:
+        - name: page
+          required: true
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: busca
+          required: false
+          in: query
+          description: Filtro para nome ou razão social
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEstabelecimentoDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      summary: Lista de estabelecimentos cadastrados na CeoPag
+      tags:
+        - CeoPag
+  /vendedores:
+    get:
+      operationId: VendedorController_all
+      parameters:
+        - name: page
+          required: true
+          in: query
+          schema:
+            default: 1
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedDto'
+                  - properties:
+                      results:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Usuario'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      security:
+        - bearer: []
+      summary: Lista todos os vendedores
+      tags:
+        - Vendedor
+  /vendedores/{id}/estabelecimentos:
+    post:
+      operationId: VendedorController_atribuirEstabelecimento
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID do vendedor
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AtribuirEstabelecimentoDto'
+      responses:
+        '201':
+          description: ''
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      security:
+        - bearer: []
+      summary: Atribui um estabelecimento ao vendedor
+      tags:
+        - Vendedor
+    get:
+      operationId: VendedorController_estabelecimentosAtribuidosPara
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID do vendedor
+          schema:
+            type: string
+        - name: page
+          required: true
+          in: query
+          schema:
+            default: 1
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginatedDto'
+                  - properties:
+                      results:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/EstabelecimentoDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      security:
+        - bearer: []
+      summary: Estabelecimentos atribuidos ao vendedor
+      tags:
+        - Vendedor
+  /vendedores/{id}/estabelecimentos/{estabelecimento_id}:
+    delete:
+      operationId: VendedorController_desatribuirEstabelecimento
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID do vendedor
+          schema:
+            type: string
+        - name: estabelecimento_id
+          required: true
+          in: path
+          description: ID do estabelecimento
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      security:
+        - bearer: []
+      summary: Desatribui um estabelecimento do vendedor
+      tags:
+        - Vendedor
+  /vendedores/{id}/recebimentos:
+    get:
+      operationId: VendedorController_recebimentos
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID do vendedor
+          schema:
+            type: string
+        - name: finish_date
+          required: true
+          in: query
+          schema:
+            example: '2025-05-31'
+            type: string
+        - name: start_date
+          required: true
+          in: query
+          schema:
+            example: '2025-05-01'
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VendedorRecebimentosDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      security:
+        - bearer: []
+      summary: Recebimentos do vendedor no período informado
+      tags:
+        - Vendedor
+  /vendedores/recebimentos/{estabelecimento_id}:
+    get:
+      operationId: VendedorController_estabelecimentoRecebimentos
+      parameters:
+        - name: estabelecimento_id
+          required: true
+          in: path
+          description: ID do estabelecimento
+          schema:
+            type: number
+        - name: finish_date
+          required: true
+          in: query
+          schema:
+            example: '2025-05-31'
+            type: string
+        - name: start_date
+          required: true
+          in: query
+          schema:
+            example: '2025-05-01'
+            type: string
+        - name: page
+          required: true
+          in: query
+          schema:
+            default: 1
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstabelecimentoRecebimentosDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      security:
+        - bearer: []
+      summary: Recebimentos do vendedor no estabelecimento e periodo informados
+      tags:
+        - Vendedor
+  /vendedores/{vendedor_id}/estabelecimentos/{estabelecimento_id}:
+    patch:
+      operationId: VendedorController_alterarTaxaComissao
+      parameters:
+        - name: vendedor_id
+          required: true
+          in: path
+          description: ID do vendedor
+          schema:
+            type: string
+        - name: estabelecimento_id
+          required: true
+          in: path
+          description: ID do estabelecimento
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlterarTaxaComissaoDto'
+      responses:
+        '200':
+          description: ''
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      security:
+        - bearer: []
+      summary: Alterar a taxa de comissão do estabelecimento
+      tags:
+        - Vendedor
+  /relatorios/vendedores:
+    get:
+      operationId: RelatoriosController_totalVendedores
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TotalDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      summary: Total de vendedores ativos
+      tags:
+        - Relatorios
+  /relatorios/estabelecimentos:
+    get:
+      operationId: RelatoriosController_totalEstabelecimentos
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TotalDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      summary: Total de estabelecimentos atríbuidos a vendedores
+      tags:
+        - Relatorios
+  /relatorios/comissao:
+    get:
+      operationId: RelatoriosController_comissao
+      parameters:
+        - name: finish_date
+          required: true
+          in: query
+          schema:
+            example: '2025-05-31'
+            type: string
+        - name: start_date
+          required: true
+          in: query
+          schema:
+            example: '2025-05-01'
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TotalDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      summary: Total de comissão no período informado
+      tags:
+        - Relatorios
+  /relatorios/vendedores/ranking:
+    get:
+      operationId: RelatoriosController_rankingMdrVendedores
+      parameters:
+        - name: finish_date
+          required: true
+          in: query
+          schema:
+            example: '2025-05-31'
+            type: string
+        - name: start_date
+          required: true
+          in: query
+          schema:
+            example: '2025-05-01'
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RankingVendedoresDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      summary: Comissão por vendedor no perido informado
+      tags:
+        - Relatorios
+info:
+  title: Portal Unipag
+  description: Documentação do portal unipag
+  version: '1.0'
+  contact: {}
+tags: []
+servers:
+  - url: http://localhost:3000
+components:
+  securitySchemes:
+    bearer:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+  schemas:
+    HttpError:
+      type: object
+      properties:
+        statusCode:
+          type: number
+        message:
+          type: string
+        error:
+          type: string
+      required:
+        - statusCode
+        - message
+    RequestLoginDto:
+      type: object
+      properties:
+        email:
+          type: string
+        senha:
+          type: string
+      required:
+        - email
+        - senha
+    ResponseLoginDto:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum:
+            - ADMINISTRADOR
+            - VENDEDOR
+        access_token:
+          type: string
+      required:
+        - id
+        - email
+        - role
+        - access_token
+    UserPayloadDto:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum:
+            - ADMINISTRADOR
+            - VENDEDOR
+      required:
+        - id
+        - email
+        - role
+    CreateUsuarioDto:
+      type: object
+      properties:
+        nome:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum:
+            - ADMINISTRADOR
+            - VENDEDOR
+        senha:
+          type: string
+      required:
+        - nome
+        - email
+        - role
+        - senha
+    Usuario:
+      type: object
+      properties:
+        id:
+          type: string
+        nome:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum:
+            - ADMINISTRADOR
+            - VENDEDOR
+        criado_em:
+          format: date-time
+          type: string
+        ativo:
+          type: boolean
+      required:
+        - id
+        - nome
+        - email
+        - role
+        - criado_em
+        - ativo
+    AlterarStatusDto:
+      type: object
+      properties:
+        ativo:
+          type: boolean
+      required:
+        - ativo
+    EstabelecimentoCeoPagDto:
+      type: object
+      properties:
+        id:
+          type: number
+        document_number:
+          type: string
+        social_reason:
+          type: string
+        name:
+          type: string
+        status:
+          type: number
+        created_at:
+          type: string
+      required:
+        - id
+        - document_number
+        - social_reason
+        - name
+        - status
+        - created_at
+    PaginatedEstabelecimentoDto:
+      type: object
+      properties:
+        message:
+          type: string
+        total:
+          type: number
+        perPage:
+          type: string
+        page:
+          type: string
+        lastPage:
+          type: number
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EstabelecimentoCeoPagDto'
+      required:
+        - message
+        - total
+        - perPage
+        - page
+        - lastPage
+        - data
+    PaginatedDto:
+      type: object
+      properties:
+        total:
+          type: number
+        page:
+          type: number
+        size:
+          type: number
+      required:
+        - total
+        - page
+        - size
+    AtribuirEstabelecimentoDto:
+      type: object
+      properties:
+        estabelecimento_id:
+          type: number
+        taxa_comissao:
+          type: number
+        numero_documento:
+          type: string
+        razao_social:
+          type: string
+        nome:
+          type: string
+      required:
+        - estabelecimento_id
+        - taxa_comissao
+        - numero_documento
+        - razao_social
+        - nome
+    EstabelecimentoDto:
+      type: object
+      properties:
+        estabelecimento_id:
+          type: number
+        taxa_comissao:
+          type: number
+        numero_documento:
+          type: string
+        razao_social:
+          type: string
+        nome:
+          type: string
+        vendedor_id:
+          type: string
+        status:
+          type: number
+        atribuido_em:
+          format: date-time
+          type: string
+      required:
+        - estabelecimento_id
+        - taxa_comissao
+        - numero_documento
+        - razao_social
+        - nome
+        - vendedor_id
+        - status
+        - atribuido_em
+    TotaisDto:
+      type: object
+      properties:
+        mdr:
+          type: number
+        tpv:
+          type: number
+        rav:
+          type: number
+        liquido:
+          type: number
+      required:
+        - mdr
+        - tpv
+        - rav
+        - liquido
+    RecebimentosDto:
+      type: object
+      properties:
+        mdr:
+          type: number
+        tpv:
+          type: number
+        rav:
+          type: number
+        liquido:
+          type: number
+        estabelecimento_id:
+          type: number
+        taxa_comissao:
+          type: number
+        numero_documento:
+          type: string
+        razao_social:
+          type: string
+        nome:
+          type: string
+        vendedor_id:
+          type: string
+        status:
+          type: number
+        atribuido_em:
+          format: date-time
+          type: string
+      required:
+        - mdr
+        - tpv
+        - rav
+        - liquido
+        - estabelecimento_id
+        - taxa_comissao
+        - numero_documento
+        - razao_social
+        - nome
+        - vendedor_id
+        - status
+        - atribuido_em
+    VendedorRecebimentosDto:
+      type: object
+      properties:
+        totais:
+          $ref: '#/components/schemas/TotaisDto'
+        recebimentos:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecebimentosDto'
+      required:
+        - totais
+        - recebimentos
+    DailyTotal:
+      type: object
+      properties:
+        mdr:
+          type: number
+        tpv:
+          type: number
+        rav:
+          type: number
+        liquido:
+          type: number
+        data_recebimento:
+          type: string
+      required:
+        - mdr
+        - tpv
+        - rav
+        - liquido
+        - data_recebimento
+    EstabelecimentoRecebimentosDto:
+      type: object
+      properties:
+        totais:
+          $ref: '#/components/schemas/TotaisDto'
+        recebimentos:
+          type: array
+          items:
+            $ref: '#/components/schemas/DailyTotal'
+        page:
+          type: number
+        total:
+          type: number
+        total_pages:
+          type: number
+        next_page:
+          type: number
+        per_page:
+          type: number
+      required:
+        - totais
+        - recebimentos
+        - page
+        - total
+        - total_pages
+        - next_page
+        - per_page
+    AlterarTaxaComissaoDto:
+      type: object
+      properties:
+        taxa_comissao:
+          type: number
+      required:
+        - taxa_comissao
+    TotalDto:
+      type: object
+      properties:
+        total:
+          type: number
+      required:
+        - total
+    RankingVendedoresDto:
+      type: object
+      properties:
+        id:
+          type: string
+        nome:
+          type: string
+        mdr:
+          type: number
+      required:
+        - id
+        - nome
+        - mdr

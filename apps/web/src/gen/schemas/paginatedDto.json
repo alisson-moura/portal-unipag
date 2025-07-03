@@ -1,0 +1,1 @@
+{"type":"object","properties":{"total":{"type":"number"},"page":{"type":"number"},"size":{"type":"number"}},"required":["total","page","size"],"x-readme-ref-name":"PaginatedDto"}

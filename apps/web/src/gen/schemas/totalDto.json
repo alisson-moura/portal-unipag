@@ -1,0 +1,1 @@
+{"type":"object","properties":{"total":{"type":"number"}},"required":["total"],"x-readme-ref-name":"TotalDto"}

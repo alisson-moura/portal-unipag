@@ -1,13 +1,16 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
-import {
-  ListarEstabelecimentoResponseDto,
-  LoginResponseDto,
-} from './responses.dto';
 import { AxiosError } from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { Env } from '../config/env.schema';
+import { PrismaService } from '../prisma/prisma.service';
+import { PaginatedEstabelecimentoDto } from './dto/estabelecimento.dto';
+import {
+  GetRecebimentosCeoPagParamsDto,
+  RecebimentosCeoPagDto,
+} from './dto/recebimentos.dto';
+import { LoginResponseDto } from './dto/login.dto';
 
 @Injectable()
 export class ApiCeoPagService {
@@ -18,6 +21,7 @@ export class ApiCeoPagService {
   constructor(
     private configService: ConfigService<Env>,
     private httpService: HttpService,
+    private prisma: PrismaService,
   ) {
     this.BASE_URL = configService.getOrThrow('MOVINGPAY_BASE_URL');
     this.VERSION_API = configService.getOrThrow('MOVINGPAY_API_VERSION');
@@ -48,26 +52,25 @@ export class ApiCeoPagService {
     return data;
   }
 
-  async listarEstabelecimentos(params: { page: number; pageSize: number }) {
+  async listarEstabelecimentos(params: { page: number; busca: string }) {
     const auth = await this.login();
-    const url = `${this.BASE_URL}/${this.PREFIX}/${this.VERSION_API}/estabelecimentos`;
+    const url = new URL(
+      `${this.BASE_URL}/${this.PREFIX}/${this.VERSION_API}/estabelecimentos`,
+    );
+    url.searchParams.append('page', String(params.page ?? '1'));
+    url.searchParams.append('limit', String('100'));
+    if (params.busca) url.searchParams.append('busca', String(params.page));
+
     const headers = {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${auth.access_token}`,
       Customer: auth.customers_id,
       Vendor: auth.vendor_id,
     };
-    const body = {
-      page: params.page ?? 1,
-      limit: params.pageSize ?? 10,
-    };
 
     const { data } = await firstValueFrom(
       this.httpService
-        .get<ListarEstabelecimentoResponseDto>(url, {
-          headers,
-          data: body,
-        })
+        .get<PaginatedEstabelecimentoDto>(url.toString(), { headers })
         .pipe(
           catchError((error: AxiosError) => {
             throw new HttpException(
@@ -79,5 +82,45 @@ export class ApiCeoPagService {
     );
 
     return data;
+  }
+
+  async recebimentosLiquidados(
+    params: GetRecebimentosCeoPagParamsDto,
+  ): Promise<RecebimentosCeoPagDto> {
+    const auth = await this.login();
+    const url = `${this.BASE_URL}/${this.PREFIX}/${this.VERSION_API}/financeiro/recebiveis/liquidados`;
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${auth.access_token}`,
+      Customer: auth.customers_id,
+      Vendor: auth.vendor_id,
+    };
+    const queryParams = {
+      ...params,
+      page: params.page ?? 1,
+      report_type: 'consolidated',
+    };
+    try {
+      const { data } = await firstValueFrom(
+        this.httpService
+          .get<RecebimentosCeoPagDto>(url, {
+            headers,
+            params: queryParams,
+          })
+          .pipe(
+            catchError((error: AxiosError) => {
+              console.error(error.response?.data);
+              throw new HttpException(
+                error.message,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+              );
+            }),
+          ),
+      );
+      return data;
+    } catch (error) {
+      console.error('Falha ao buscar recebíveis liquidados:', error);
+      throw error;
+    }
   }
 }

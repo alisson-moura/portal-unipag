@@ -4,6 +4,11 @@ import {
     getCoreRowModel,
     useReactTable,
     getPaginationRowModel,
+    type SortingState,
+    type GlobalFilterTableState,
+    type ColumnFiltersState,
+    getSortedRowModel,
+    getFilteredRowModel
 } from "@tanstack/react-table"
 import {
     Table,
@@ -14,6 +19,10 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
+import { useState } from "react"
+import { Input } from "./input"
+import { cn } from "@/lib/utils"
+import { ListFilterIcon } from "lucide-react"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -24,16 +33,46 @@ export function DataTable<TData, TValue>({
     columns,
     data,
 }: DataTableProps<TData, TValue>) {
+    const [sorting, setSorting] = useState<SortingState>([])
+    const [globalFilter, setGlobalFilter] = useState<GlobalFilterTableState>()
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
+        onSortingChange: setSorting,
+        onGlobalFilterChange: setGlobalFilter,
+        onColumnFiltersChange: setColumnFilters,
+        getSortedRowModel: getSortedRowModel(),
+        state: {
+            sorting,
+            globalFilter,
+            columnFilters
+        },
+        getFilteredRowModel: getFilteredRowModel(),
+        globalFilterFn: "includesString"
     })
 
     return (
         <div>
-            <div className="rounded-md border">
+            <div className="relative max-w-96">
+                <Input
+                    className={cn(
+                        "peer min-w-60 ps-9",
+                        "pe-9"
+                    )}
+                    value={globalFilter?.globalFilter}
+                    onChange={e => table.setGlobalFilter(String(e.target.value))}
+                    placeholder="Procurar..."
+                    type="text"
+                />
+                <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
+                    <ListFilterIcon size={16} aria-hidden="true" />
+                </div>
+            </div>
+            <div className="rounded-md border mt-2.5">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (

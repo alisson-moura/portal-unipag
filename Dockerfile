@@ -1,5 +1,5 @@
 # --- STAGE 1: Build das dependências e da aplicação ---
-FROM node:20-alpine AS builder
+FROM node:22.14-alpine AS builder
 
 WORKDIR /app
 
@@ -21,6 +21,8 @@ RUN npm ci
 # O Docker invalidará este passo e os próximos se qualquer arquivo mudar.
 COPY . .
 
+RUN npm run prisma:generate
+
 # Executa o script de build que você definiu na raiz do monorepo.
 # Isso gerará o build do frontend em /apps/web/dist e a copiará para /apps/api/public
 # e o build do backend em /apps/api/dist.
@@ -28,7 +30,7 @@ RUN npm run build
 
 # --- STAGE 2: Imagem Final de Produção ---
 # Usa uma imagem Node.js Alpine ainda mais leve para a imagem de produção.
-FROM node:20-alpine
+FROM node:22.14-alpine
 
 # Define o diretório de trabalho na imagem final.
 WORKDIR /usr/src/app
