@@ -23,6 +23,8 @@ COPY . .
 
 RUN npm run prisma:generate
 
+RUN npm run web:generate
+
 # Executa o script de build que você definiu na raiz do monorepo.
 # Isso gerará o build do frontend em /apps/web/dist e a copiará para /apps/api/public
 # e o build do backend em /apps/api/dist.

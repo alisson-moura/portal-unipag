@@ -7,11 +7,17 @@
   ],
   "scripts": {
     "dev": "concurrently \"npm run start:dev -w api\" \"npm run dev -w web\"",
-    "build": "npm run build -w web && npm run build -w api",
-    "start:prod": "npm run start:prod -w api",
     "lint": "concurrently \"npm run lint -w api\" \"npm run lint -w web\"",
-    "prisma:generate": "npx prisma generate  --schema=./apps/api/prisma/schema.prisma",
-    "prisma:migrate": "npm run prisma:migrate -w api"
+    "prisma:generate": "npx prisma generate --schema=./apps/api/prisma/schema.prisma",
+    "prisma:migrate": "npm run prisma:migrate -w api",
+    "web:generate": "npm run generate -w web",
+    "build": "npm run prisma:generate && npm run web:generate && npm run build -w web && npm run build -w api",
+    "db:migrate:prod": "npx prisma migrate deploy --schema=./apps/api/prisma/schema.prisma",
+    "pm2:start": "pm2 start apps/api/dist/src/main.js --name unipag",
+    "pm2:stop": "pm2 stop unipag",
+    "pm2:restart": "pm2 restart unipag",
+    "pm2:logs": "pm2 logs unipag",
+    "deploy": "npm ci && npm run db:migrate:prod && npm run build && npm run pm2:restart"
   },
   "keywords": [],
   "author": "",
