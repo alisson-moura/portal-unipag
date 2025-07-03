@@ -1,1 +1,0 @@
-{"type":"object","properties":{"id":{"type":"string"},"email":{"type":"string"},"role":{"type":"string","enum":["ADMINISTRADOR","VENDEDOR"]}},"required":["id","email","role"],"x-readme-ref-name":"UserPayloadDto"}

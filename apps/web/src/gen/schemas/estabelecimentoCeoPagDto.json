@@ -1,1 +1,0 @@
-{"type":"object","properties":{"id":{"type":"number"},"document_number":{"type":"string"},"social_reason":{"type":"string"},"name":{"type":"string"},"status":{"type":"number"},"created_at":{"type":"string"}},"required":["id","document_number","social_reason","name","status","created_at"],"x-readme-ref-name":"EstabelecimentoCeoPagDto"}

@@ -23,3 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 .env
+
+src/gen/*
+
+# Exceto o arquivo .gitkeep
+!src/gen/.gitkeep

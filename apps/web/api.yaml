@@ -1,6 +1,6 @@
 openapi: 3.0.0
 paths:
-  /auth/login:
+  /api/auth/login:
     post:
       operationId: AuthController_login
       parameters: []
@@ -50,7 +50,7 @@ paths:
                 $ref: '#/components/schemas/HttpError'
       tags:
         - Auth
-  /auth/perfil:
+  /api/auth/perfil:
     get:
       operationId: AuthController_getProfile
       parameters: []
@@ -89,7 +89,7 @@ paths:
         - bearer: []
       tags:
         - Auth
-  /usuarios:
+  /api/usuarios:
     post:
       operationId: UsuarioController_create
       parameters: []
@@ -131,7 +131,7 @@ paths:
       summary: Cadastra um novo usuário no sistema
       tags:
         - Usuario
-  /usuarios/{id}:
+  /api/usuarios/{id}:
     get:
       operationId: UsuarioController_findOne
       parameters:
@@ -273,7 +273,7 @@ paths:
       summary: Lista de estabelecimentos cadastrados na CeoPag
       tags:
         - CeoPag
-  /vendedores:
+  /api/vendedores:
     get:
       operationId: VendedorController_all
       parameters:
@@ -325,7 +325,7 @@ paths:
       summary: Lista todos os vendedores
       tags:
         - Vendedor
-  /vendedores/{id}/estabelecimentos:
+  /api/vendedores/{id}/estabelecimentos:
     post:
       operationId: VendedorController_atribuirEstabelecimento
       parameters:
@@ -430,7 +430,7 @@ paths:
       summary: Estabelecimentos atribuidos ao vendedor
       tags:
         - Vendedor
-  /vendedores/{id}/estabelecimentos/{estabelecimento_id}:
+  /api/vendedores/{id}/estabelecimentos/{estabelecimento_id}:
     delete:
       operationId: VendedorController_desatribuirEstabelecimento
       parameters:
@@ -478,7 +478,7 @@ paths:
       summary: Desatribui um estabelecimento do vendedor
       tags:
         - Vendedor
-  /vendedores/{id}/recebimentos:
+  /api/vendedores/{id}/recebimentos:
     get:
       operationId: VendedorController_recebimentos
       parameters:
@@ -536,7 +536,7 @@ paths:
       summary: Recebimentos do vendedor no período informado
       tags:
         - Vendedor
-  /vendedores/recebimentos/{estabelecimento_id}:
+  /api/vendedores/recebimentos/{estabelecimento_id}:
     get:
       operationId: VendedorController_estabelecimentoRecebimentos
       parameters:
@@ -600,7 +600,7 @@ paths:
       summary: Recebimentos do vendedor no estabelecimento e periodo informados
       tags:
         - Vendedor
-  /vendedores/{vendedor_id}/estabelecimentos/{estabelecimento_id}:
+  /api/vendedores/{vendedor_id}/estabelecimentos/{estabelecimento_id}:
     patch:
       operationId: VendedorController_alterarTaxaComissao
       parameters:
@@ -654,7 +654,7 @@ paths:
       summary: Alterar a taxa de comissão do estabelecimento
       tags:
         - Vendedor
-  /relatorios/vendedores:
+  /api/relatorios/vendedores:
     get:
       operationId: RelatoriosController_totalVendedores
       parameters: []
@@ -692,7 +692,7 @@ paths:
       summary: Total de vendedores ativos
       tags:
         - Relatorios
-  /relatorios/estabelecimentos:
+  /api/relatorios/estabelecimentos:
     get:
       operationId: RelatoriosController_totalEstabelecimentos
       parameters: []
@@ -730,7 +730,7 @@ paths:
       summary: Total de estabelecimentos atríbuidos a vendedores
       tags:
         - Relatorios
-  /relatorios/comissao:
+  /api/relatorios/comissao:
     get:
       operationId: RelatoriosController_comissao
       parameters:
@@ -780,7 +780,7 @@ paths:
       summary: Total de comissão no período informado
       tags:
         - Relatorios
-  /relatorios/vendedores/ranking:
+  /api/relatorios/vendedores/ranking:
     get:
       operationId: RelatoriosController_rankingMdrVendedores
       parameters:

@@ -3,7 +3,7 @@ import { ApiCeoPagService } from './api.service';
 import { ApiOkResponse, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { PaginatedEstabelecimentoDto } from './dto/estabelecimento.dto';
 
-@Controller('api/ceopag')
+@Controller('ceopag')
 export class CeoPagController {
   constructor(private readonly apiService: ApiCeoPagService) {}
 

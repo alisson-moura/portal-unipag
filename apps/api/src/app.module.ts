@@ -23,9 +23,7 @@ import { RelatoriosModule } from './relatorios/relatorios.module';
       },
     }),
     ServeStaticModule.forRoot({
-      exclude: ['/api*'],
-      rootPath: join(__dirname, '..', 'public'),
-      renderPath: '/',
+      rootPath: join(__dirname, '..', "..", 'public')
     }),
     PrismaModule,
     AuthModule,
@@ -37,4 +35,4 @@ import { RelatoriosModule } from './relatorios/relatorios.module';
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }

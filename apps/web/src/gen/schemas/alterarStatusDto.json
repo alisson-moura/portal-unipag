@@ -1,1 +1,0 @@
-{"type":"object","properties":{"ativo":{"type":"boolean"}},"required":["ativo"],"x-readme-ref-name":"AlterarStatusDto"}

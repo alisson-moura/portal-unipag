@@ -1,1 +1,0 @@
-{"type":"object","properties":{"id":{"type":"string"},"email":{"type":"string"},"role":{"type":"string","enum":["ADMINISTRADOR","VENDEDOR"]},"access_token":{"type":"string"}},"required":["id","email","role","access_token"],"x-readme-ref-name":"ResponseLoginDto"}

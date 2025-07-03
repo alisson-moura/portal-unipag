@@ -1,1 +1,0 @@
-{"type":"object","properties":{"nome":{"type":"string"},"email":{"type":"string"},"role":{"type":"string","enum":["ADMINISTRADOR","VENDEDOR"]},"senha":{"type":"string"}},"required":["nome","email","role","senha"],"x-readme-ref-name":"CreateUsuarioDto"}

@@ -1,1 +1,0 @@
-{"type":"object","properties":{"taxa_comissao":{"type":"number"}},"required":["taxa_comissao"],"x-readme-ref-name":"AlterarTaxaComissaoDto"}

@@ -1,1 +1,0 @@
-{"type":"object","properties":{"mdr":{"type":"number"},"tpv":{"type":"number"},"rav":{"type":"number"},"liquido":{"type":"number"},"data_recebimento":{"type":"string"}},"required":["mdr","tpv","rav","liquido","data_recebimento"],"x-readme-ref-name":"DailyTotal"}

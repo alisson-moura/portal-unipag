@@ -88,12 +88,12 @@ export function LoginForm({
                             <FormItem className="grid gap-3">
                                 <div className="flex items-center">
                                     <FormLabel>Senha</FormLabel>
-                                    <a
+                                   {/*  <a
                                         href="#"
                                         className="ml-auto text-sm underline-offset-4 hover:underline"
                                     >
                                         Esqueceu sua senha?
-                                    </a>
+                                    </a> */}
                                 </div>
                                 <FormControl>
                                     <Input type="password"  {...field} />

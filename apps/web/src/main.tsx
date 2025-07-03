@@ -36,7 +36,7 @@ axiosInstance.interceptors.response.use(
         return response;
     },
     (error) => {
-        const isNotAuthUrl = error.response.config.url !== "/auth/login"
+        const isNotAuthUrl = error.response.config.url !== "/api/auth/login"
         
         // Se a API retornar um erro e não for de login
         if (error.response && isNotAuthUrl && error.response.status === 401) {

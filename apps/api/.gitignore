@@ -399,3 +399,8 @@ dist
 .webpack
 .serverless/**/*.zip
 /generated/prisma
+
+public/*
+
+# Exceto o arquivo .gitkeep
+!public/.gitkeep
