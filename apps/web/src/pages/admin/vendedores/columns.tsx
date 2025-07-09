@@ -3,6 +3,7 @@ import BadgeStatus from "@/components/badge-status";
 import type { Usuario } from "@/gen";
 import { AlterarStatus } from "./alterar-status";
 import { Clientes } from "./clientes";
+import { RedefinirSenha } from "./redefinir-senha";
 
 export const columns: ColumnDef<Usuario>[] = [
     {
@@ -42,6 +43,7 @@ export const columns: ColumnDef<Usuario>[] = [
         cell: ({ row }) =>
             <div className="flex justify-center">
                 <Clientes id={row.getValue<string>("id")} />
+                    <RedefinirSenha id={row.getValue<string>("id")}  />
                 < AlterarStatus
                     id={row.getValue<string>("id")}
                     status={row.getValue<boolean>("ativo")}

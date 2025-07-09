@@ -10,6 +10,7 @@ import {
 } from '@nestjs/swagger';
 import { Usuario } from './dto/usuario.dto';
 import { AlterarStatusDto } from './dto/update-status.dto';
+import { RedefinirSenhaDto } from './dto/redefinir-senha.dto';
 
 @ApiBearerAuth()
 @Controller('usuarios')
@@ -38,5 +39,11 @@ export class UsuarioController {
   @Patch(':id')
   alterarStatus(@Param('id') id: string, @Body() data: AlterarStatusDto) {
     return this.usuarioService.alterarStatus(id, data);
+  }
+
+  @ApiOperation({ summary: 'Redefini a senha do usuário' })
+  @Patch(':id/senha')
+  redefinirSenha(@Param('id') id: string, @Body() data: RedefinirSenhaDto) {
+    return this.usuarioService.redefinirSenha(id, data);
   }
 }

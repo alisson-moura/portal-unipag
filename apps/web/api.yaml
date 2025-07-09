@@ -223,6 +223,53 @@ paths:
       summary: Atualiza o status
       tags:
         - Usuario
+  /api/usuarios/{id}/senha:
+    patch:
+      operationId: UsuarioController_redefinirSenha
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RedefinirSenhaDto'
+      responses:
+        '200':
+          description: ''
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      security:
+        - bearer: []
+      summary: Redefini a senha do usuário
+      tags:
+        - Usuario
   /api/ceopag/estabelecimentos:
     get:
       operationId: CeoPagController_estabelecimentos
@@ -962,6 +1009,13 @@ components:
           type: boolean
       required:
         - ativo
+    RedefinirSenhaDto:
+      type: object
+      properties:
+        senha:
+          type: string
+      required:
+        - senha
     EstabelecimentoCeoPagDto:
       type: object
       properties:

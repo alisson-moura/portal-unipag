@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { AlterarStatusDto } from './dto/update-status.dto';
+import { RedefinirSenhaDto } from './dto/redefinir-senha.dto';
 
 @Injectable()
 export class UsuarioService {
@@ -63,6 +64,27 @@ export class UsuarioService {
     await this.database.usuario.update({
       where: { id },
       data,
+    });
+  }
+
+  async redefinirSenha(id: string, data: RedefinirSenhaDto) {
+    const usuario = await this.database.usuario.findUnique({
+      where: { id },
+      include: { estabelecimentos: false },
+    });
+    if (!usuario)
+      throw new NotFoundException(
+        'Não encontramos um usuário com o id informado',
+      );
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(data.senha, salt);
+
+    await this.database.usuario.update({
+      where: { id },
+      data: {
+        senha: hashedPassword,
+      },
     });
   }
 }
