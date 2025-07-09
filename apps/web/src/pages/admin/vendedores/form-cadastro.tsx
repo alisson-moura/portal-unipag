@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { AlertCircleIcon, LoaderCircleIcon } from "lucide-react"
+import { AlertCircleIcon, LoaderCircleIcon, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button";
 import {
     Form,
@@ -64,12 +64,21 @@ export function CadastrarVendedorForm() {
         },
     });
 
+    const generatePassword = () => {
+        const randomNumbers = Math.floor(1000 + Math.random() * 9000); // Gera 4 dígitos
+        const newPassword = `Unipag@${randomNumbers}`;
+        form.setValue('senha', newPassword);
+    };
+
     function onSubmit(values: z.infer<typeof cadastroSchema>) {
         mutate({ data: { ...values, role: "VENDEDOR" } })
     }
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={() => {
+            form.reset()
+            setOpen(!open)
+        }}>
             <DialogTrigger asChild>
                 <Button variant="outline">Cadastrar</Button>
             </DialogTrigger>
@@ -111,7 +120,7 @@ export function CadastrarVendedorForm() {
                                 </FormItem>
                             )}
                         />
-                        
+
                         {/* Phone Field */}
                         <FormField
                             control={form.control}
@@ -130,7 +139,6 @@ export function CadastrarVendedorForm() {
                                 </FormItem>
                             )}
                         />
-
                         {/* Senha Field */}
                         <FormField
                             control={form.control}
@@ -139,12 +147,24 @@ export function CadastrarVendedorForm() {
                                 <FormItem>
                                     <FormLabel>Senha</FormLabel>
                                     <FormControl>
-                                        <Input type="senha" {...field} />
+                                        <div className="flex gap-2">
+                                            <Input type="text" {...field} />
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={generatePassword}
+                                                className="px-3"
+                                            >
+                                                <RefreshCw size={16} />
+                                            </Button>
+                                        </div>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
+
                         <DialogFooter>
                             <DialogClose asChild>
                                 <Button variant="ghost">Cancel</Button>
