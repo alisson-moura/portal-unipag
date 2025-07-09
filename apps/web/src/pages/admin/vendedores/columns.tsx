@@ -13,6 +13,9 @@ export const columns: ColumnDef<Usuario>[] = [
         accessorKey: "email",
         header: "Email",
 
+    },{
+        accessorKey: "telefone",
+        header: "Telefone",
     },
     {
         accessorKey: "criado_em",

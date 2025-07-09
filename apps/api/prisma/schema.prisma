@@ -17,6 +17,7 @@ model Usuario {
   id               String            @id @default(uuid())
   nome             String
   email            String            @unique
+  telefone         String?
   senha            String
   role             Role
   criado_em        DateTime          @default(now())

@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { AlertCircleIcon,  LoaderCircleIcon } from "lucide-react"
+import { AlertCircleIcon, LoaderCircleIcon } from "lucide-react"
 import { Button } from "@/components/ui/button";
 import {
     Form,
@@ -33,6 +33,11 @@ const cadastroSchema = z.object({
     email: z.string()
         .min(1, { message: 'O campo e-mail é obrigatório.' })
         .email({ message: 'Por favor, insira um endereço de e-mail válido.' }),
+    telefone: z.string()
+        .min(1, { message: 'O campo telefone é obrigatório.' })
+        .min(10, { message: 'O telefone deve ter no mínimo 10 dígitos.' })
+        .max(15, { message: 'O telefone deve ter no máximo 15 dígitos.' })
+        .regex(/^[\d\s\-()]+$/, { message: 'O telefone deve conter apenas números, espaços, hífens e parênteses.' }),
     senha: z.string()
         .min(6, { message: 'A senha deve ter no mínimo 6 caracteres.' }),
 });
@@ -44,7 +49,7 @@ export function CadastrarVendedorForm() {
             onSuccess: (() => {
                 form.reset()
                 setOpen(false)
-                queryClient.invalidateQueries({queryKey: ["vendedores"]})
+                queryClient.invalidateQueries({ queryKey: ["vendedores"] })
             }),
         },
     })
@@ -54,7 +59,8 @@ export function CadastrarVendedorForm() {
         defaultValues: {
             nome: "",
             email: "",
-            senha: ""
+            senha: "",
+            telefone: ""
         },
     });
 
@@ -100,6 +106,25 @@ export function CadastrarVendedorForm() {
                                     <FormLabel>Email</FormLabel>
                                     <FormControl>
                                         <Input type="email" placeholder="Digite o e-mail" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        
+                        {/* Phone Field */}
+                        <FormField
+                            control={form.control}
+                            name="telefone"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Telefone</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="tel"
+                                            placeholder="Digite o telefone"
+                                            {...field}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

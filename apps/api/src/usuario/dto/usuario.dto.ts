@@ -13,6 +13,9 @@ export class Usuario {
   @ApiProperty()
   email: string;
 
+  @ApiProperty()
+  telefone: string;
+
   senha: string;
 
   @ApiProperty({ enum: ['ADMINISTRADOR', 'VENDEDOR'] })
