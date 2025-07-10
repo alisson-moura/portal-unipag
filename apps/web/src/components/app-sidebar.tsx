@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Users, Store, CreditCard, Wallet, User } from "lucide-react"
+import { Home, Users, Store, CreditCard, Wallet, User, ShieldUser } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -25,7 +25,12 @@ const navItems = [
       { title: "Estabelecimento", url: "/admin/financeiro/estabelecimentos", icon: Store }
     ]
   },
-  { title: "Vendedores", url: "/admin/vendedores", icon: Users },
+  {
+    title: "Usuários", icon: Users, items: [
+      { title: "Vendedores", url: "/admin/vendedores", icon: User },
+      { title: "Administradores", url: "/admin/administradores", icon: ShieldUser  }
+    ]
+  },
   { title: "Estabelecimentos", url: "/admin/estabelecimentos", icon: Store },
 ]
 

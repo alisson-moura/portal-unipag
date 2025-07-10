@@ -131,6 +131,56 @@ paths:
       summary: Cadastra um novo usuário no sistema
       tags:
         - Usuario
+    get:
+      operationId: UsuarioController_all
+      parameters:
+        - name: role
+          required: false
+          in: query
+          description: filtro da role do usuário
+          schema:
+            enum:
+              - ADMINISTRADOR
+              - VENDEDOR
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Usuario'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      security:
+        - bearer: []
+      summary: Lista todos os usuários
+      tags:
+        - Usuario
   /api/usuarios/{id}:
     get:
       operationId: UsuarioController_findOne

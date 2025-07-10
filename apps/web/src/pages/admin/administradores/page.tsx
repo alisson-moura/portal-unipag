@@ -3,15 +3,15 @@ import { columns } from './columns';
 import { useUsuarioControllerAll } from '@/gen';
 import { CadastrarVendedorForm } from './form-cadastro';
 
-export function VendedoresPage() {
+export function AdministradoresPage() {
     const { data } = useUsuarioControllerAll(
-            {role: "VENDEDOR"}, 
-            { query: { queryKey: ["vendedores"] } }
-        )
+        {role: "ADMINISTRADOR"}, 
+        { query: { queryKey: ["administradores"] } }
+    )
     return (
         <div className="space-y-6">
             <div className='flex items-center justify-between'>
-                <h1 className="text-xl font-bold">Vendedores</h1>
+                <h1 className="text-xl font-bold">Administradores</h1>
                 <CadastrarVendedorForm />
             </div>
             <DataTable columns={columns} data={data?.data ?? []} />
@@ -19,4 +19,4 @@ export function VendedoresPage() {
     );
 }
 
-export default VendedoresPage; 
+export default AdministradoresPage; 

@@ -23,7 +23,7 @@ import { RelatoriosModule } from './relatorios/relatorios.module';
       },
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', "..", 'public')
+      rootPath: join(__dirname, '..', '..', 'public'),
     }),
     PrismaModule,
     AuthModule,
@@ -35,4 +35,4 @@ import { RelatoriosModule } from './relatorios/relatorios.module';
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}

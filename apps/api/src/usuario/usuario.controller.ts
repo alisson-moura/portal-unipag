@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Param, Patch } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Query,
+} from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import {
@@ -7,6 +15,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { Usuario } from './dto/usuario.dto';
 import { AlterarStatusDto } from './dto/update-status.dto';
@@ -22,6 +31,19 @@ export class UsuarioController {
   @Post()
   create(@Body() createUsuarioDto: CreateUsuarioDto) {
     return this.usuarioService.create(createUsuarioDto);
+  }
+
+  @ApiOperation({ summary: 'Lista todos os usuários' })
+  @ApiQuery({
+    description: 'filtro da role do usuário',
+    name: 'role',
+    enum: ['ADMINISTRADOR', 'VENDEDOR'],
+    required: false,
+  })
+  @ApiOkResponse({ type: Usuario, isArray: true })
+  @Get()
+  all(@Query('role') role?: 'ADMINISTRADOR' | 'VENDEDOR') {
+    return this.usuarioService.all({ role });
   }
 
   @ApiOkResponse({ type: Usuario })

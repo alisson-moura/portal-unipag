@@ -30,6 +30,15 @@ export class UsuarioService {
     });
   }
 
+  async all({ role }: { role?: 'ADMINISTRADOR' | 'VENDEDOR' }) {
+    const usuarios = await this.database.usuario.findMany({
+      where: {
+        role,
+      },
+    });
+    return usuarios;
+  }
+
   async findByEmail(email: string) {
     const usuario = await this.database.usuario.findUnique({
       where: { email },
