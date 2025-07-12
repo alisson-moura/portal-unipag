@@ -226,6 +226,10 @@ export class VendedorService {
       mdr: Math.round(paid.mdr * taxa_comissao),
       rav: paid.rav,
       liquido: paid.net_amount,
+      pagamentos: paid.payables.map((paid) => ({
+        ...paid,
+        payables_mdr: Math.round(paid.payables_mdr * taxa_comissao),
+      })),
     }));
 
     return {

@@ -1242,6 +1242,182 @@ components:
       required:
         - totais
         - recebimentos
+    PayableDto:
+      type: object
+      properties:
+        merchants_id:
+          type: number
+          description: ID do estabelecimento.
+          example: 123
+        merchants_document_number:
+          type: string
+          description: Número do documento do estabelecimento.
+          example: '12345678000195'
+        merchants_name:
+          type: string
+          description: Nome do estabelecimento.
+          example: Nome do Estabelecimento
+        original_merchants_id:
+          type: number
+          description: ID original do estabelecimento.
+          example: 123
+        original_document_number:
+          type: string
+          description: Número do documento original do estabelecimento.
+          example: '12345678000195'
+        original_merchants_name:
+          type: string
+          description: Nome original do estabelecimento.
+          example: Nome Original do Estabelecimento
+        payables_id:
+          type: number
+          description: ID do recebível.
+          example: 456
+        transaction_id:
+          type: number
+          description: ID da transação.
+          example: 789
+        authorization_code:
+          type: string
+          description: Código de autorização da transação.
+          example: A1B2C3D4
+        authorization_currency_code:
+          type: string
+          description: Código da moeda de autorização.
+          example: BRL
+        card_brand:
+          type: string
+          description: Bandeira do cartão.
+          example: Visa
+        payment_method:
+          type: string
+          description: Método de pagamento.
+          example: credit_card
+        installments:
+          type: number
+          description: Número de parcelas da transação.
+          example: 1
+        transaction_nsu:
+          type: string
+          description: NSU da transação.
+          example: '123456789'
+        transaction_tef_nsu:
+          type: string
+          description: NSU do TEF da transação.
+          example: '987654321'
+        transaction_amount:
+          type: string
+          description: Valor da transação.
+          example: '100.00'
+        original_transaction_amount:
+          type: string
+          description: Valor original da transação.
+          example: '100.00'
+        split_rules:
+          type: object
+          description: Regras de divisão da transação.
+          example: null
+          nullable: true
+        transaction_splited:
+          type: string
+          description: Indica se a transação foi dividida.
+          example: 'false'
+        transaction_date:
+          type: string
+          description: Data da transação.
+          example: '2025-07-21T10:00:00Z'
+          format: date-time
+        payables_installment:
+          type: number
+          description: Número da parcela do recebível.
+          example: 1
+        payables_mdr:
+          type: number
+          description: Taxa de MDR do recebível.
+          example: 2.5
+        payables_rav:
+          type: number
+          description: Taxa de RAV do recebível.
+          example: 0.5
+        payables_gross_amount:
+          type: number
+          description: Valor bruto do recebível.
+          example: 100
+        payables_net_amount:
+          type: number
+          description: Valor líquido do recebível.
+          example: 97
+        payables_split_rule_id:
+          type: object
+          description: ID da regra de divisão do recebível.
+          example: null
+          nullable: true
+        anticipated:
+          type: string
+          description: Indica se o recebível foi antecipado.
+          example: 'false'
+        payables_status:
+          type: string
+          description: Status do recebível.
+          example: paid
+        payment_date:
+          type: string
+          description: Data de pagamento.
+          example: '2025-08-20T10:00:00Z'
+          format: date-time
+        original_payment_date:
+          type: string
+          description: Data de pagamento original.
+          example: '2025-08-20T10:00:00Z'
+          format: date-time
+        payables_type:
+          type: string
+          description: Tipo do recebível.
+          example: credit
+        created_at:
+          type: string
+          description: Data de criação.
+          example: '2025-07-21T10:00:00Z'
+          format: date-time
+        updated_at:
+          type: string
+          description: Data da última atualização.
+          example: '2025-07-21T10:00:00Z'
+          format: date-time
+      required:
+        - merchants_id
+        - merchants_document_number
+        - merchants_name
+        - original_merchants_id
+        - original_document_number
+        - original_merchants_name
+        - payables_id
+        - transaction_id
+        - authorization_code
+        - authorization_currency_code
+        - card_brand
+        - payment_method
+        - installments
+        - transaction_nsu
+        - transaction_tef_nsu
+        - transaction_amount
+        - original_transaction_amount
+        - split_rules
+        - transaction_splited
+        - transaction_date
+        - payables_installment
+        - payables_mdr
+        - payables_rav
+        - payables_gross_amount
+        - payables_net_amount
+        - payables_split_rule_id
+        - anticipated
+        - payables_status
+        - payment_date
+        - original_payment_date
+        - payables_type
+        - created_at
+        - updated_at
     DailyTotal:
       type: object
       properties:
@@ -1255,12 +1431,17 @@ components:
           type: number
         data_recebimento:
           type: string
+        pagamentos:
+          type: array
+          items:
+            $ref: '#/components/schemas/PayableDto'
       required:
         - mdr
         - tpv
         - rav
         - liquido
         - data_recebimento
+        - pagamentos
     EstabelecimentoRecebimentosDto:
       type: object
       properties:

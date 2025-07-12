@@ -2,6 +2,7 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { DataTable } from "@/components/ui/data-table";
 import { formatCurrency } from "@/lib/format";
 import type { DailyTotal } from "@/gen";
+import ListaPagamentos from "./lista-pagamentos";
 
 const columns: ColumnDef<DailyTotal>[] = [
     {
@@ -34,6 +35,13 @@ const columns: ColumnDef<DailyTotal>[] = [
         header: "Valor Liquído",
         cell: ({ row }) => {
             return <div className="text-left">{formatCurrency(row.original.liquido)}</div>
+        }
+    },
+    {
+        accessorFn: (row) => row.pagamentos,
+        header: "Detalhes",
+        cell: ({ row }) => {
+            return <ListaPagamentos pagamentos={row.original.pagamentos} date={row.original.data_recebimento} />
         }
     },
 ]
