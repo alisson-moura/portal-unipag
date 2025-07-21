@@ -9,6 +9,8 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { VendedorService } from './vendedor.service';
 import {
@@ -23,9 +25,13 @@ import { CreateIndicacaoDto } from './dto/create-indicacao.dto';
 import { UpdateIndicacaoDto } from './dto/update-indicacao.dto';
 import { VendedorResponseDto } from './dto/vendedor-response.dto';
 import { IndicacaoResponseDto } from './dto/indicacao-response.dto';
+import { RolesGuard } from 'src/auth/guards';
+import { Roles } from 'src/auth/guards';
+import { UserPayloadDto } from 'src/auth/auth.dto';
 
 @ApiTags('Vendedores')
 @ApiBearerAuth()
+@UseGuards(RolesGuard)
 @Controller('vendedores')
 export class VendedorController {
   constructor(private readonly vendedorService: VendedorService) {}
@@ -42,7 +48,12 @@ export class VendedorController {
     type: VendedorResponseDto,
     isArray: true,
   })
-  findAll() {
+  @Roles('ADMINISTRADOR', 'VENDEDOR')
+  findAll(@Req() req: { user: UserPayloadDto }) {
+    const { user } = req;
+    if (user.role === 'VENDEDOR') {
+      return this.vendedorService.findAll(user.id);
+    }
     return this.vendedorService.findAll();
   }
 
@@ -59,6 +70,7 @@ export class VendedorController {
     example: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
   })
   @ApiBody({ type: CreateIndicacaoDto })
+  @Roles('ADMINISTRADOR')
   criarIndicacao(
     @Param('vendedorId', ParseUUIDPipe) vendedorId: string,
     @Body() data: CreateIndicacaoDto,
@@ -82,6 +94,7 @@ export class VendedorController {
     type: IndicacaoResponseDto,
     isArray: true,
   })
+  @Roles('ADMINISTRADOR', 'VENDEDOR')
   listarIndicacoesPorVendedor(
     @Param('vendedorId', ParseUUIDPipe) vendedorId: string,
   ) {
@@ -107,6 +120,7 @@ export class VendedorController {
     status: 204,
     description: 'Taxa de comissão atualizada com sucesso.',
   })
+  @Roles('ADMINISTRADOR')
   atualizarTaxaIndicacao(
     @Param('vendedorId', ParseUUIDPipe) vendedorId: string,
     @Param('estabelecimentoId', ParseUUIDPipe) estabelecimentoId: string,
@@ -136,6 +150,7 @@ export class VendedorController {
     type: String,
   })
   @ApiResponse({ status: 204, description: 'Vínculo removido com sucesso.' })
+  @Roles('ADMINISTRADOR')
   removerIndicacao(
     @Param('vendedorId', ParseUUIDPipe) vendedorId: string,
     @Param('estabelecimentoId', ParseUUIDPipe) estabelecimentoId: string,

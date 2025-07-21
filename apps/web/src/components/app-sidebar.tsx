@@ -16,26 +16,31 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 import { NavUser } from './nav-user';
-
-const navItems = [
-  { title: "Dashboard", url: "/admin", icon: Home },
-  {
-    title: "Recebimentos", icon: Wallet, items: [
-      { title: "Vendedor", url: "/admin/financeiro/vendedores", icon: User },
-      { title: "Estabelecimento", url: "/admin/financeiro/estabelecimentos", icon: Store }
-    ]
-  },
-  {
-    title: "Usuários", icon: Users, items: [
-      { title: "Vendedores", url: "/admin/vendedores", icon: User },
-      { title: "Administradores", url: "/admin/administradores", icon: ShieldUser  }
-    ]
-  },
-  { title: "Estabelecimentos", url: "/admin/estabelecimentos", icon: Store },
-]
+import { useAuth } from '@/pages/auth/auth-provider';
 
 export function AppSidebar() {
+  const { user } = useAuth()
   const location = useLocation();
+
+  const navItems = [
+    { title: "Dashboard", url: "/admin", icon: Home },
+    {
+      title: "Recebimentos", icon: Wallet, items: [
+        { title: "Vendedor", url: "/admin/financeiro/vendedores", icon: User },
+        { title: "Estabelecimento", url: "/admin/financeiro/estabelecimentos", icon: Store }
+      ]
+    },
+    { title: "Estabelecimentos", url: "/admin/estabelecimentos", icon: Store },
+  ]
+
+  if (user?.role == "ADMINISTRADOR") {
+    navItems.splice(2, 0, {
+      title: "Usuários", icon: Users, items: [
+        { title: "Vendedores", url: "/admin/vendedores", icon: User },
+        { title: "Administradores", url: "/admin/administradores", icon: ShieldUser }
+      ]
+    })
+  }
 
   return (
     <Sidebar>

@@ -22,10 +22,11 @@ export class VendedorService {
     return vendedor;
   }
 
-  async findAll() {
+  async findAll(id?: string) {
     const vendedores = await this.database.usuario.findMany({
       where: {
         role: 'VENDEDOR',
+        id,
       },
       orderBy: {
         criado_em: 'asc',

@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
@@ -20,14 +21,18 @@ import {
 import { Usuario } from './dto/usuario.dto';
 import { AlterarStatusDto } from './dto/update-status.dto';
 import { RedefinirSenhaDto } from './dto/redefinir-senha.dto';
+import { Roles } from 'src/auth/guards';
+import { RolesGuard } from 'src/auth/guards';
 
 @ApiBearerAuth()
+@UseGuards(RolesGuard)
 @Controller('usuarios')
 export class UsuarioController {
   constructor(private readonly usuarioService: UsuarioService) {}
 
   @ApiOperation({ summary: 'Cadastra um novo usuário no sistema' })
   @ApiCreatedResponse()
+  @Roles('ADMINISTRADOR')
   @Post()
   create(@Body() createUsuarioDto: CreateUsuarioDto) {
     return this.usuarioService.create(createUsuarioDto);
@@ -41,6 +46,7 @@ export class UsuarioController {
     required: false,
   })
   @ApiOkResponse({ type: Usuario, isArray: true })
+  @Roles('ADMINISTRADOR')
   @Get()
   all(@Query('role') role?: 'ADMINISTRADOR' | 'VENDEDOR') {
     return this.usuarioService.all({ role });
@@ -52,18 +58,21 @@ export class UsuarioController {
     description: 'ID do usuário',
   })
   @ApiOperation({ summary: 'Dados do usuário' })
+  @Roles('ADMINISTRADOR', 'VENDEDOR')
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usuarioService.findOne(id);
   }
 
   @ApiOperation({ summary: 'Atualiza o status' })
+  @Roles('ADMINISTRADOR')
   @Patch(':id')
   alterarStatus(@Param('id') id: string, @Body() data: AlterarStatusDto) {
     return this.usuarioService.alterarStatus(id, data);
   }
 
   @ApiOperation({ summary: 'Redefini a senha do usuário' })
+  @Roles('ADMINISTRADOR', 'VENDEDOR')
   @Patch(':id/senha')
   redefinirSenha(@Param('id') id: string, @Body() data: RedefinirSenhaDto) {
     return this.usuarioService.redefinirSenha(id, data);

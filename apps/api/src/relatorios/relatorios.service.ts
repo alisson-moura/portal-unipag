@@ -44,8 +44,6 @@ export class RelatoriosService {
       },
     });
 
-    console.log(query);
-
     const promiseRecebimentos = indicacoes.map(async (indicacao) => {
       const recebimentoCeoPag = await this.ceopagService.recebimentosLiquidados(
         {

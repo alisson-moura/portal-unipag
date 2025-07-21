@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards, Req } from '@nestjs/common';
 import { EstabelecimentosService } from './estabelecimentos.service';
 import {
   ApiBearerAuth,
@@ -8,9 +8,13 @@ import {
 } from '@nestjs/swagger';
 
 import { EstabelecimentoDto } from './dto/estabelecimento.dto';
+import { RolesGuard } from 'src/auth/guards';
+import { Roles } from 'src/auth/guards';
+import { UserPayloadDto } from 'src/auth/auth.dto';
 
 @ApiTags('Estabelecimentos')
 @ApiBearerAuth()
+@UseGuards(RolesGuard)
 @Controller('estabelecimentos')
 export class EstabelecimentosController {
   constructor(
@@ -25,7 +29,12 @@ export class EstabelecimentosController {
     type: EstabelecimentoDto,
     isArray: true,
   })
-  findAll() {
+  @Roles('ADMINISTRADOR', 'VENDEDOR')
+  findAll(@Req() req: { user: UserPayloadDto }) {
+    const { user } = req;
+    if (user.role === 'VENDEDOR') {
+      return this.estabelecimentosService.findAll(user.id);
+    }
     return this.estabelecimentosService.findAll();
   }
 }
