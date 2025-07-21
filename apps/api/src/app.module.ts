@@ -1,5 +1,5 @@
 import { join } from 'node:path';
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { CeopagModule } from './ceopag/ceopag.module';
 import { ConfigModule } from '@nestjs/config';
@@ -9,6 +9,9 @@ import { UsuarioModule } from './usuario/usuario.module';
 import { AuthModule } from './auth/auth.module';
 import { VendedorModule } from './vendedor/vendedor.module';
 import { RelatoriosModule } from './relatorios/relatorios.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { EstabelecimentosModule } from './estabelecimentos/estabelecimentos.module';
+import { LoggerMiddleware } from './config/log-middleware';
 
 @Module({
   imports: [
@@ -22,6 +25,7 @@ import { RelatoriosModule } from './relatorios/relatorios.module';
         }
       },
     }),
+    ScheduleModule.forRoot(),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'public'),
     }),
@@ -31,8 +35,13 @@ import { RelatoriosModule } from './relatorios/relatorios.module';
     UsuarioModule,
     VendedorModule,
     RelatoriosModule,
+    EstabelecimentosModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}

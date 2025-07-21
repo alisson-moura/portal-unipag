@@ -58,14 +58,14 @@ export class UsuarioService {
   async alterarStatus(id: string, data: AlterarStatusDto) {
     const usuario = await this.database.usuario.findUnique({
       where: { id },
-      include: { estabelecimentos: true },
+      include: { indicacoes: true },
     });
     if (!usuario)
       throw new NotFoundException(
         'Não encontramos um usuário com o id informado',
       );
 
-    if (usuario.estabelecimentos.length > 0)
+    if (usuario.indicacoes.length > 0)
       throw new BadRequestException(
         'Não é possível alterar o status de um vendedor com estabelecimentos associados.',
       );
@@ -79,7 +79,7 @@ export class UsuarioService {
   async redefinirSenha(id: string, data: RedefinirSenhaDto) {
     const usuario = await this.database.usuario.findUnique({
       where: { id },
-      include: { estabelecimentos: false },
+      include: { indicacoes: true },
     });
     if (!usuario)
       throw new NotFoundException(

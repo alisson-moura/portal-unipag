@@ -3,11 +3,15 @@ import { DataTable } from "@/components/ui/data-table";
 import { formatCurrency } from "@/lib/format";
 import type { DailyTotal } from "@/gen";
 import ListaPagamentos from "./lista-pagamentos";
+import { format, parseISO } from "date-fns";
 
 const columns: ColumnDef<DailyTotal>[] = [
     {
         accessorKey: "data_recebimento",
-        header: "Data recebimento"
+        header: "Data recebimento",
+        cell: ({ row }) => {
+            return <div className="text-left"> {format(parseISO(row.original.data_recebimento), 'dd/MM/yyyy')}</div>
+        }
     },
     {
         accessorFn: (row) => row.tpv,

@@ -10,14 +10,14 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useCeoPagControllerEstabelecimentos, type EstabelecimentoCeoPagDto } from "@/gen";
 import { AtribuirPara } from "./atribuir";
+import { useEstabelecimentosControllerFindAll, type EstabelecimentoDto } from "@/gen";
 
 const statusOptions = [
     { value: "1", label: "Ativo", color: "green" },
     { value: "2", label: "Inativo", color: "red" },
 ]
-export function StatusFilter({ column }: { column: Column<EstabelecimentoCeoPagDto, unknown> }) {
+export function StatusFilter({ column }: { column: Column<EstabelecimentoDto, unknown> }) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -44,7 +44,7 @@ export function StatusFilter({ column }: { column: Column<EstabelecimentoCeoPagD
     )
 }
 
-const columns: ColumnDef<EstabelecimentoCeoPagDto>[] = [
+const columns: ColumnDef<EstabelecimentoDto>[] = [
     {
         accessorKey: "document_number",
         header: ({ column }) => {
@@ -89,25 +89,32 @@ const columns: ColumnDef<EstabelecimentoCeoPagDto>[] = [
         accessorKey: "id",
         header: () => <div className="text-center">Ações</div>,
         enableGlobalFilter: false,
-        cell: ({ row }) =>
-            <div className="flex justify-center">
-                <AtribuirPara
-                    id={row.getValue<number>("id")}
-                    nome={row.getValue<string>("name")}
-                    razao_social={row.getValue<string>("social_reason")}
-                    numero_documento={row.getValue<string>("document_number")}
-                />
-            </div>
+        cell: ({ row }) => {
+            const isAtribuida = row.original.indicacao != null
+            if (isAtribuida) return null
+            return (
+                <div className="flex justify-center">
+                    <AtribuirPara
+                        id={row.getValue<string>("id")}
+                    />
+                </div>
+            )
+        }
     },
 ]
 
 export function ListaEstabelecimentos() {
-    const { data, isLoading } = useCeoPagControllerEstabelecimentos({ page: 1 })
+    const { data, isLoading } = useEstabelecimentosControllerFindAll({
+        query: {
+            queryKey: ["estabelecimentos"],
+        }
+    })
+
     if (isLoading) {
         return <div>Carregando...</div>
     }
 
     return (
-        <DataTable columns={columns} data={data?.data.data ?? []} />
+        <DataTable columns={columns} data={data?.data ?? []} />
     )
 }

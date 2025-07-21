@@ -320,79 +320,20 @@ paths:
       summary: Redefini a senha do usuário
       tags:
         - Usuario
-  /api/ceopag/estabelecimentos:
-    get:
-      operationId: CeoPagController_estabelecimentos
-      parameters:
-        - name: page
-          required: true
-          in: query
-          schema:
-            default: 1
-            type: number
-        - name: busca
-          required: false
-          in: query
-          description: Filtro para nome ou razão social
-          schema:
-            type: string
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedEstabelecimentoDto'
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HttpError'
-      summary: Lista de estabelecimentos cadastrados na CeoPag
-      tags:
-        - CeoPag
   /api/vendedores:
     get:
-      operationId: VendedorController_all
-      parameters:
-        - name: page
-          required: true
-          in: query
-          schema:
-            default: 1
-            type: number
+      description: Retorna uma lista de todos os usuários com a role "VENDEDOR".
+      operationId: VendedorController_findAll
+      parameters: []
       responses:
         '200':
-          description: ''
+          description: Lista de vendedores retornada com sucesso.
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/PaginatedDto'
-                  - properties:
-                      results:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/Usuario'
+                type: array
+                items:
+                  $ref: '#/components/schemas/VendedorResponseDto'
         '400':
           description: Bad request
           content:
@@ -421,25 +362,26 @@ paths:
         - bearer: []
       summary: Lista todos os vendedores
       tags:
-        - Vendedor
-  /api/vendedores/{id}/estabelecimentos:
+        - Vendedores
+  /api/vendedores/{vendedorId}/indicacoes:
     post:
-      operationId: VendedorController_atribuirEstabelecimento
+      operationId: VendedorController_criarIndicacao
       parameters:
-        - name: id
+        - name: vendedorId
           required: true
           in: path
-          description: ID do vendedor
+          description: UUID do vendedor
           schema:
+            example: a1b2c3d4-e5f6-7890-1234-567890abcdef
             type: string
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AtribuirEstabelecimentoDto'
+              $ref: '#/components/schemas/CreateIndicacaoDto'
       responses:
-        '201':
+        '204':
           description: ''
         '400':
           description: Bad request
@@ -467,37 +409,28 @@ paths:
                 $ref: '#/components/schemas/HttpError'
       security:
         - bearer: []
-      summary: Atribui um estabelecimento ao vendedor
+      summary: Cria um novo vínculo (indicação) entre um vendedor e um estabelecimento.
       tags:
-        - Vendedor
+        - Vendedores
     get:
-      operationId: VendedorController_estabelecimentosAtribuidosPara
+      operationId: VendedorController_listarIndicacoesPorVendedor
       parameters:
-        - name: id
+        - name: vendedorId
           required: true
           in: path
-          description: ID do vendedor
+          description: UUID do vendedor
           schema:
+            example: a1b2c3d4-e5f6-7890-1234-567890abcdef
             type: string
-        - name: page
-          required: true
-          in: query
-          schema:
-            default: 1
-            type: number
       responses:
         '200':
-          description: ''
+          description: Lista de indicações retornada com sucesso.
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/PaginatedDto'
-                  - properties:
-                      results:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/EstabelecimentoDto'
+                type: array
+                items:
+                  $ref: '#/components/schemas/IndicacaoResponseDto'
         '400':
           description: Bad request
           content:
@@ -524,204 +457,34 @@ paths:
                 $ref: '#/components/schemas/HttpError'
       security:
         - bearer: []
-      summary: Estabelecimentos atribuidos ao vendedor
+      summary: Lista todos os estabelecimentos indicados por um vendedor.
       tags:
-        - Vendedor
-  /api/vendedores/{id}/estabelecimentos/{estabelecimento_id}:
-    delete:
-      operationId: VendedorController_desatribuirEstabelecimento
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: ID do vendedor
-          schema:
-            type: string
-        - name: estabelecimento_id
-          required: true
-          in: path
-          description: ID do estabelecimento
-          schema:
-            type: number
-      responses:
-        '200':
-          description: ''
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HttpError'
-      security:
-        - bearer: []
-      summary: Desatribui um estabelecimento do vendedor
-      tags:
-        - Vendedor
-  /api/vendedores/{id}/recebimentos:
-    get:
-      operationId: VendedorController_recebimentos
-      parameters:
-        - name: id
-          required: true
-          in: path
-          description: ID do vendedor
-          schema:
-            type: string
-        - name: finish_date
-          required: true
-          in: query
-          schema:
-            example: '2025-05-31'
-            type: string
-        - name: start_date
-          required: true
-          in: query
-          schema:
-            example: '2025-05-01'
-            type: string
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VendedorRecebimentosDto'
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HttpError'
-      security:
-        - bearer: []
-      summary: Recebimentos do vendedor no período informado
-      tags:
-        - Vendedor
-  /api/vendedores/recebimentos/{estabelecimento_id}:
-    get:
-      operationId: VendedorController_estabelecimentoRecebimentos
-      parameters:
-        - name: estabelecimento_id
-          required: true
-          in: path
-          description: ID do estabelecimento
-          schema:
-            type: number
-        - name: finish_date
-          required: true
-          in: query
-          schema:
-            example: '2025-05-31'
-            type: string
-        - name: start_date
-          required: true
-          in: query
-          schema:
-            example: '2025-05-01'
-            type: string
-        - name: page
-          required: true
-          in: query
-          schema:
-            default: 1
-            type: number
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/EstabelecimentoRecebimentosDto'
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HttpError'
-      security:
-        - bearer: []
-      summary: Recebimentos do vendedor no estabelecimento e periodo informados
-      tags:
-        - Vendedor
-  /api/vendedores/{vendedor_id}/estabelecimentos/{estabelecimento_id}:
+        - Vendedores
+  /api/vendedores/{vendedorId}/indicacoes/{estabelecimentoId}:
     patch:
-      operationId: VendedorController_alterarTaxaComissao
+      operationId: VendedorController_atualizarTaxaIndicacao
       parameters:
-        - name: vendedor_id
+        - name: vendedorId
           required: true
           in: path
-          description: ID do vendedor
+          description: UUID do vendedor
           schema:
             type: string
-        - name: estabelecimento_id
+        - name: estabelecimentoId
           required: true
           in: path
-          description: ID do estabelecimento
+          description: UUID do estabelecimento
           schema:
-            type: number
+            type: string
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AlterarTaxaComissaoDto'
+              $ref: '#/components/schemas/UpdateIndicacaoDto'
       responses:
-        '200':
-          description: ''
+        '204':
+          description: Taxa de comissão atualizada com sucesso.
         '400':
           description: Bad request
           content:
@@ -748,9 +511,166 @@ paths:
                 $ref: '#/components/schemas/HttpError'
       security:
         - bearer: []
-      summary: Alterar a taxa de comissão do estabelecimento
+      summary: Atualiza a taxa de comissão de uma indicação específica.
       tags:
-        - Vendedor
+        - Vendedores
+    delete:
+      operationId: VendedorController_removerIndicacao
+      parameters:
+        - name: vendedorId
+          required: true
+          in: path
+          description: UUID do vendedor
+          schema:
+            type: string
+        - name: estabelecimentoId
+          required: true
+          in: path
+          description: UUID do estabelecimento
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Vínculo removido com sucesso.
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      security:
+        - bearer: []
+      summary: Remove o vínculo (indicação) entre um vendedor e um estabelecimento.
+      tags:
+        - Vendedores
+  /api/relatorios/comissao:
+    get:
+      operationId: RelatoriosController_comissao
+      parameters:
+        - name: start_date
+          required: true
+          in: query
+          description: 'A data de início do período (formato: YYYY-MM-DD)'
+          schema:
+            example: '2025-01-01'
+            type: string
+        - name: finish_date
+          required: true
+          in: query
+          description: 'A data final do período (formato: YYYY-MM-DD)'
+          schema:
+            example: '2025-01-31'
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TotalDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      security:
+        - bearer: []
+      summary: Total de comissão no período informado
+      tags:
+        - Relatorios
+  /api/relatorios/vendedores/ranking:
+    get:
+      operationId: RelatoriosController_rankingMdrVendedores
+      parameters:
+        - name: start_date
+          required: true
+          in: query
+          description: 'A data de início do período (formato: YYYY-MM-DD)'
+          schema:
+            example: '2025-01-01'
+            type: string
+        - name: finish_date
+          required: true
+          in: query
+          description: 'A data final do período (formato: YYYY-MM-DD)'
+          schema:
+            example: '2025-01-31'
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RankingVendedoresDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      security:
+        - bearer: []
+      summary: Comissão por vendedor no perido informado
+      tags:
+        - Relatorios
   /api/relatorios/vendedores:
     get:
       operationId: RelatoriosController_totalVendedores
@@ -786,6 +706,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HttpError'
+      security:
+        - bearer: []
       summary: Total de vendedores ativos
       tags:
         - Relatorios
@@ -824,24 +746,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HttpError'
+      security:
+        - bearer: []
       summary: Total de estabelecimentos atríbuidos a vendedores
       tags:
         - Relatorios
-  /api/relatorios/comissao:
+  /api/relatorios/vendedores/{id}:
     get:
-      operationId: RelatoriosController_comissao
+      operationId: RelatoriosController_recebimentosVendedor
       parameters:
-        - name: finish_date
+        - name: id
           required: true
-          in: query
+          in: path
+          description: ID do vendedor
           schema:
-            example: '2025-05-31'
             type: string
         - name: start_date
           required: true
           in: query
+          description: 'A data de início do período (formato: YYYY-MM-DD)'
           schema:
-            example: '2025-05-01'
+            example: '2025-01-01'
+            type: string
+        - name: finish_date
+          required: true
+          in: query
+          description: 'A data final do período (formato: YYYY-MM-DD)'
+          schema:
+            example: '2025-01-31'
             type: string
       responses:
         '200':
@@ -849,7 +781,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TotalDto'
+                $ref: '#/components/schemas/VendedorRecebimentosDto'
         '400':
           description: Bad request
           content:
@@ -874,34 +806,84 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HttpError'
-      summary: Total de comissão no período informado
+      security:
+        - bearer: []
+      summary: Recebimentos do vendedor no período informado
       tags:
         - Relatorios
-  /api/relatorios/vendedores/ranking:
+  /api/relatorios/estabelecimentos/{id}:
     get:
-      operationId: RelatoriosController_rankingMdrVendedores
+      operationId: RelatoriosController_recebimentosEstabelecimento
       parameters:
-        - name: finish_date
+        - name: id
           required: true
-          in: query
+          in: path
+          description: ID do estabelecimento
           schema:
-            example: '2025-05-31'
             type: string
         - name: start_date
           required: true
           in: query
+          description: 'A data de início do período (formato: YYYY-MM-DD)'
           schema:
-            example: '2025-05-01'
+            example: '2025-01-01'
+            type: string
+        - name: finish_date
+          required: true
+          in: query
+          description: 'A data final do período (formato: YYYY-MM-DD)'
+          schema:
+            example: '2025-01-31'
             type: string
       responses:
         '200':
           description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstabelecimentoRecebimentosDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      security:
+        - bearer: []
+      summary: Recebimentos do vendedor no estabelecimento e periodo informados
+      tags:
+        - Relatorios
+  /api/estabelecimentos:
+    get:
+      operationId: EstabelecimentosController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: Lista de estabelecimentos retornada com sucesso.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/RankingVendedoresDto'
+                  $ref: '#/components/schemas/EstabelecimentoDto'
         '400':
           description: Bad request
           content:
@@ -926,9 +908,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HttpError'
-      summary: Comissão por vendedor no perido informado
+      security:
+        - bearer: []
+      summary: Listar todos os estabelecimentos
       tags:
-        - Relatorios
+        - Estabelecimentos
 info:
   title: Portal Unipag
   description: Documentação do portal unipag
@@ -1066,113 +1050,155 @@ components:
           type: string
       required:
         - senha
-    EstabelecimentoCeoPagDto:
+    VendedorResponseDto:
       type: object
       properties:
         id:
-          type: number
-        document_number:
           type: string
-        social_reason:
+          example: a1b2c3d4-e5f6-7890-1234-567890abcdef
+        nome:
           type: string
-        name:
+          example: João da Silva
+        email:
           type: string
-        status:
-          type: number
-        created_at:
+          example: joao.silva@example.com
+        telefone:
+          type: object
+          example: '11987654321'
+          nullable: true
+        role:
           type: string
+          enum:
+            - ADMINISTRADOR
+            - VENDEDOR
+          example: VENDEDOR
+        criado_em:
+          format: date-time
+          type: string
+        ativo:
+          type: boolean
+          example: true
       required:
         - id
+        - nome
+        - email
+        - telefone
+        - role
+        - criado_em
+        - ativo
+    CreateIndicacaoDto:
+      type: object
+      properties:
+        estabelecimento_id:
+          type: string
+          description: UUID do estabelecimento que está sendo indicado.
+          example: a1b2c3d4-e5f6-7890-1234-567890abcdef
+        taxa_comissao:
+          type: number
+          description: >-
+            Taxa de comissão (percentual) para o vendedor sobre este
+            estabelecimento.
+          example: 3.75
+      required:
+        - estabelecimento_id
+        - taxa_comissao
+    EstabelecimentoResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: a1b2c3d4-e5f6-7890-1234-567890abcdef
+        ceo_pag_id:
+          type: number
+          example: 12345
+        document_number:
+          type: string
+          example: 12.345.678/0001-99
+        social_reason:
+          type: string
+          example: Empresa Exemplo LTDA
+        name:
+          type: string
+          example: Nome Fantasia Exemplo
+        status:
+          type: number
+          example: 1
+        account_source:
+          type: string
+          example: ONE
+        created_at:
+          format: date-time
+          type: string
+          example: '2023-10-01T12:00:00Z'
+        updated_at:
+          type: object
+          example: '2023-10-01T12:00:00Z'
+      required:
+        - id
+        - ceo_pag_id
         - document_number
         - social_reason
         - name
         - status
+        - account_source
         - created_at
-    PaginatedEstabelecimentoDto:
+    IndicacaoResponseDto:
       type: object
       properties:
-        message:
+        id:
           type: string
-        total:
-          type: number
-        perPage:
-          type: string
-        page:
-          type: string
-        lastPage:
-          type: number
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/EstabelecimentoCeoPagDto'
-      required:
-        - message
-        - total
-        - perPage
-        - page
-        - lastPage
-        - data
-    PaginatedDto:
-      type: object
-      properties:
-        total:
-          type: number
-        page:
-          type: number
-        size:
-          type: number
-      required:
-        - total
-        - page
-        - size
-    AtribuirEstabelecimentoDto:
-      type: object
-      properties:
-        estabelecimento_id:
-          type: number
+          example: f0e9d8c7-b6a5-4321-fedc-ba9876543210
         taxa_comissao:
           type: number
-        numero_documento:
-          type: string
-        razao_social:
-          type: string
-        nome:
-          type: string
-      required:
-        - estabelecimento_id
-        - taxa_comissao
-        - numero_documento
-        - razao_social
-        - nome
-    EstabelecimentoDto:
-      type: object
-      properties:
-        estabelecimento_id:
-          type: number
-        taxa_comissao:
-          type: number
-        numero_documento:
-          type: string
-        razao_social:
-          type: string
-        nome:
-          type: string
-        vendedor_id:
-          type: string
-        status:
-          type: number
+          description: Taxa de comissão percentual
+          example: 5.5
         atribuido_em:
           format: date-time
           type: string
+        usuario_id:
+          type: string
+          example: a1b2c3d4-e5f6-7890-1234-567890abcdef
+        estabelecimento_id:
+          type: string
+          example: b1c2d3e4-f5g6-7890-1234-567890abcdef
+        estabelecimento:
+          $ref: '#/components/schemas/EstabelecimentoResponseDto'
       required:
-        - estabelecimento_id
+        - id
         - taxa_comissao
-        - numero_documento
-        - razao_social
-        - nome
-        - vendedor_id
-        - status
         - atribuido_em
+        - usuario_id
+        - estabelecimento_id
+        - estabelecimento
+    UpdateIndicacaoDto:
+      type: object
+      properties:
+        taxa_comissao:
+          type: number
+          description: Nova taxa de comissão (percentual) para a indicação.
+          example: 4
+      required:
+        - taxa_comissao
+    TotalDto:
+      type: object
+      properties:
+        total:
+          type: number
+      required:
+        - total
+    RankingVendedoresDto:
+      type: object
+      properties:
+        id:
+          type: string
+        nome:
+          type: string
+        mdr:
+          type: number
+      required:
+        - id
+        - nome
+        - mdr
     TotaisDto:
       type: object
       properties:
@@ -1189,6 +1215,43 @@ components:
         - tpv
         - rav
         - liquido
+    EstabelecimentoDto:
+      type: object
+      properties:
+        id:
+          type: string
+        ceo_pag_id:
+          type: number
+        document_number:
+          type: string
+          description: Número do documento (CNPJ ou CPF) do estabelecimento.
+          example: '12345678000195'
+        social_reason:
+          type: string
+          description: Razão social do estabelecimento.
+          example: Empresa Exemplo LTDA
+        name:
+          type: string
+          description: Nome fantasia ou nome comercial do estabelecimento.
+          example: Nome Fantasia Exemplo
+        status:
+          type: number
+          description: 'Status do estabelecimento (ex: 1 para Ativo, 0 para Inativo).'
+          example: 1
+        account_source:
+          type: string
+          description: Origem da conta ou sistema de onde o registro foi importado.
+          example: sistema_legado
+        indicacao:
+          type: string
+      required:
+        - id
+        - ceo_pag_id
+        - document_number
+        - social_reason
+        - name
+        - status
+        - account_source
     RecebimentosDto:
       type: object
       properties:
@@ -1200,36 +1263,14 @@ components:
           type: number
         liquido:
           type: number
-        estabelecimento_id:
-          type: number
-        taxa_comissao:
-          type: number
-        numero_documento:
-          type: string
-        razao_social:
-          type: string
-        nome:
-          type: string
-        vendedor_id:
-          type: string
-        status:
-          type: number
-        atribuido_em:
-          format: date-time
-          type: string
+        estabelecimento:
+          $ref: '#/components/schemas/EstabelecimentoDto'
       required:
         - mdr
         - tpv
         - rav
         - liquido
-        - estabelecimento_id
-        - taxa_comissao
-        - numero_documento
-        - razao_social
-        - nome
-        - vendedor_id
-        - status
-        - atribuido_em
+        - estabelecimento
     VendedorRecebimentosDto:
       type: object
       properties:
@@ -1451,48 +1492,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DailyTotal'
-        page:
-          type: number
-        total:
-          type: number
-        total_pages:
-          type: number
-        next_page:
-          type: number
-        per_page:
-          type: number
       required:
         - totais
         - recebimentos
-        - page
-        - total
-        - total_pages
-        - next_page
-        - per_page
-    AlterarTaxaComissaoDto:
-      type: object
-      properties:
-        taxa_comissao:
-          type: number
-      required:
-        - taxa_comissao
-    TotalDto:
-      type: object
-      properties:
-        total:
-          type: number
-      required:
-        - total
-    RankingVendedoresDto:
-      type: object
-      properties:
-        id:
-          type: string
-        nome:
-          type: string
-        mdr:
-          type: number
-      required:
-        - id
-        - nome
-        - mdr

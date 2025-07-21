@@ -5,11 +5,11 @@ import type { RecebimentosDto } from "@/gen";
 
 const columns: ColumnDef<RecebimentosDto>[] = [
     {
-        accessorKey: "numero_documento",
+        accessorKey: "estabelecimento.document_number",
         header: "CPF / CNPJ"
     },
     {
-        accessorKey: "razao_social",
+        accessorKey: "estabelecimento.social_reason",
         header: "Razão Social",
     },
     {

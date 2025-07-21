@@ -13,7 +13,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import NumberInput from "@/components/ui/number-input"
-import { useVendedorControllerAll, useVendedorControllerAtribuirEstabelecimento } from "@/gen"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Building2, Search, Loader2, AlertCircleIcon } from "lucide-react"
 import { useMemo, useState } from "react"
@@ -22,6 +21,8 @@ import { z } from "zod"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { toast } from "sonner"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { useVendedorControllerFindAll, useVendedorControllerCriarIndicacao } from "@/gen"
+import { queryClient } from "@/lib/query-client"
 
 // 1. Definir o schema de validação com Zod e mensagens em pt-BR
 const atribuirVendedorSchema = z.object({
@@ -37,16 +38,17 @@ const atribuirVendedorSchema = z.object({
 
 type AtribuirVendedorForm = z.infer<typeof atribuirVendedorSchema>;
 
-export function AtribuirPara({ id, nome, razao_social, numero_documento }: { id: number, nome: string, razao_social: string, numero_documento: string }) {
+export function AtribuirPara({ id }: { id: string }) {
   const [open, setOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState("");
-  const { data: vendedoresData, isLoading } = useVendedorControllerAll({ page: 1 });
-  const { mutate, isPending, error } = useVendedorControllerAtribuirEstabelecimento({
+  const { data: vendedoresData, isLoading } = useVendedorControllerFindAll();
+  const { mutate, isPending, error } = useVendedorControllerCriarIndicacao({
     mutation: {
       onSuccess: () => {
         form.reset()
         setOpen(false)
         toast.success("Estabelecimento atríbuido com sucesso.")
+        queryClient.invalidateQueries({ queryKey: ["estabelecimentos"] })
       }
     }
   })
@@ -60,7 +62,7 @@ export function AtribuirPara({ id, nome, razao_social, numero_documento }: { id:
 
   const filteredVendedores = useMemo(() => {
     if (!vendedoresData?.data) return [];
-    return vendedoresData.data.results?.filter(vendedor =>
+    return vendedoresData.data.filter(vendedor =>
       vendedor.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
       vendedor.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -68,13 +70,10 @@ export function AtribuirPara({ id, nome, razao_social, numero_documento }: { id:
 
   const onSubmit = (values: AtribuirVendedorForm) => {
     mutate({
-      id: values.vendedorId,
+      vendedorId: values.vendedorId,
       data: {
         taxa_comissao: values.taxaComissao,
         estabelecimento_id: id,
-        nome,
-        razao_social,
-        numero_documento
       }
     })
   };

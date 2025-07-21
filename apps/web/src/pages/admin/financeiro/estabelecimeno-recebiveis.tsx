@@ -4,10 +4,10 @@ import { FallbackNoData } from "./metric-skeleton";
 import { MetricCard } from "./metric-card";
 import { RecebiveisSkeleton } from "./metric-skeleton";
 import { ListaEstabelecimentoRecebimentos } from "./lista-estabelecimento-recebiveis";
-import { useVendedorControllerEstabelecimentoRecebimentos } from "@/gen";
+import { useRelatoriosControllerRecebimentosEstabelecimento } from "@/gen";
 
-export function EstabelecimentoRecebiveis({ estabelecimento_id, start_date, finish_date }: { estabelecimento_id: number, finish_date: string, start_date: string }) {
-    const { isLoading, data } = useVendedorControllerEstabelecimentoRecebimentos(estabelecimento_id, {page: 1, finish_date, start_date})
+export function EstabelecimentoRecebiveis({ estabelecimento_id, start_date, finish_date }: { estabelecimento_id: string, finish_date: string, start_date: string }) {
+    const { isLoading, data } = useRelatoriosControllerRecebimentosEstabelecimento(estabelecimento_id, {finish_date, start_date})
 
     if (isLoading) return <RecebiveisSkeleton />
     if (!data) return <FallbackNoData />

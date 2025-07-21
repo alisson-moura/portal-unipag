@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class EstabelecimentoCeoPagDto {
   @ApiProperty()
-  id: number;
+  id: string;
   @ApiProperty()
   document_number: string;
   @ApiProperty()
@@ -13,6 +13,10 @@ export class EstabelecimentoCeoPagDto {
   status: number;
   @ApiProperty()
   created_at: string;
+  @ApiProperty({
+    description: 'informa em qual base o estabelecimento está cadastrado',
+  })
+  account_source: 'ONE' | 'TWO';
 }
 
 export class PaginatedEstabelecimentoDto {

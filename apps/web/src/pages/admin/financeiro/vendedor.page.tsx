@@ -6,10 +6,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { CalendarIcon, Filter } from "lucide-react";
 import { useState } from "react";
 import { VendedorRecebiveis } from "./vendedor-recebiveis";
-import { useVendedorControllerAll } from "@/gen";
+import { useVendedorControllerFindAll } from "@/gen";
 
 export function VendedorRecebiveisPage() {
-  const { data, isLoading } = useVendedorControllerAll({ page: 1 })
+  const { data, isLoading } = useVendedorControllerFindAll()
   const [seller, setSeller] = useState<string>("")
   const [startDate, setStartDate] = useState<string>("")
   const [endDate, setEndDate] = useState<string>("")
@@ -44,7 +44,7 @@ export function VendedorRecebiveisPage() {
                   <SelectValue placeholder="Escolha o vendedor" />
                 </SelectTrigger>
                 <SelectContent>
-                  {data?.data.results?.map(vendedor => <SelectItem key={vendedor.id} value={`${vendedor.id}`}>{vendedor.nome}</SelectItem>)}
+                  {data?.data.map(vendedor => <SelectItem key={vendedor.id} value={`${vendedor.id}`}>{vendedor.nome}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>

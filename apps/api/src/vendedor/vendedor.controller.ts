@@ -3,192 +3,143 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
-  Query,
 } from '@nestjs/common';
 import { VendedorService } from './vendedor.service';
 import {
   ApiBearerAuth,
-  ApiOkResponse,
+  ApiBody,
   ApiOperation,
   ApiParam,
-  ApiQuery,
+  ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
-import { ApiPaginatedResponse } from 'src/config/paginated.dto';
-import { Usuario } from 'src/usuario/dto/usuario.dto';
-import {
-  AlterarTaxaComissaoDto,
-  AtribuirEstabelecimentoDto,
-  EstabelecimentoDto,
-} from './dto/estabelecimento.dto';
-import {
-  EstabelecimentoRecebimentosDto,
-  RecebimentosQueryDto,
-  VendedorRecebimentosDto,
-} from './dto/recebimentos.dto';
+import { CreateIndicacaoDto } from './dto/create-indicacao.dto';
+import { UpdateIndicacaoDto } from './dto/update-indicacao.dto';
+import { VendedorResponseDto } from './dto/vendedor-response.dto';
+import { IndicacaoResponseDto } from './dto/indicacao-response.dto';
 
+@ApiTags('Vendedores')
 @ApiBearerAuth()
 @Controller('vendedores')
 export class VendedorController {
   constructor(private readonly vendedorService: VendedorService) {}
 
-  @ApiPaginatedResponse(Usuario)
-  @ApiQuery({
-    name: 'page',
-    type: Number,
-    default: 1,
-  })
+  @Get()
   @ApiOperation({
     summary: 'Lista todos os vendedores',
+    description:
+      'Retorna uma lista de todos os usuários com a role "VENDEDOR".',
   })
-  @Get()
-  all(@Query('page') page: number) {
-    return this.vendedorService.findAll({ page });
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de vendedores retornada com sucesso.',
+    type: VendedorResponseDto,
+    isArray: true,
+  })
+  findAll() {
+    return this.vendedorService.findAll();
   }
 
-  @ApiParam({
-    name: 'id',
-    description: 'ID do vendedor',
-  })
+  @Post(':vendedorId/indicacoes')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
-    summary: 'Atribui um estabelecimento ao vendedor',
-  })
-  @Post(':id/estabelecimentos')
-  atribuirEstabelecimento(
-    @Param('id') id: string,
-    @Body() data: AtribuirEstabelecimentoDto,
-  ) {
-    return this.vendedorService.atribuirEstabelecimento(id, data);
-  }
-
-  @ApiParam({
-    name: 'id',
-    description: 'ID do vendedor',
+    summary:
+      'Cria um novo vínculo (indicação) entre um vendedor e um estabelecimento.',
   })
   @ApiParam({
-    name: 'estabelecimento_id',
-    description: 'ID do estabelecimento',
-  })
-  @ApiOperation({
-    summary: 'Desatribui um estabelecimento do vendedor',
-  })
-  @Delete(':id/estabelecimentos/:estabelecimento_id')
-  desatribuirEstabelecimento(
-    @Param('id') id: string,
-    @Param('estabelecimento_id') estabelecimento_id: number,
-  ) {
-    return this.vendedorService.desatribuirEstabelecimento(
-      id,
-      +estabelecimento_id,
-    );
-  }
-
-  @ApiPaginatedResponse(EstabelecimentoDto)
-  @ApiQuery({
-    name: 'page',
-    type: Number,
-    default: 1,
-  })
-  @ApiParam({
-    name: 'id',
-    description: 'ID do vendedor',
-  })
-  @ApiOperation({
-    summary: 'Estabelecimentos atribuidos ao vendedor',
-  })
-  @Get(':id/estabelecimentos')
-  estabelecimentosAtribuidosPara(
-    @Param('id') id: string,
-    @Query('page') page: number,
-  ) {
-    return this.vendedorService.estabelecimentosAtribuidoPara(id, { page });
-  }
-
-  @ApiOkResponse({ type: VendedorRecebimentosDto })
-  @ApiQuery({
-    name: 'start_date',
+    name: 'vendedorId',
+    description: 'UUID do vendedor',
     type: String,
-    example: '2025-05-01',
-    required: true,
+    example: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
   })
-  @ApiQuery({
-    name: 'finish_date',
-    type: String,
-    example: '2025-05-31',
-    required: true,
-  })
-  @ApiParam({
-    name: 'id',
-    description: 'ID do vendedor',
-  })
-  @ApiOperation({
-    summary: 'Recebimentos do vendedor no período informado',
-  })
-  @Get(':id/recebimentos')
-  recebimentos(@Param('id') id: string, @Query() query: RecebimentosQueryDto) {
-    return this.vendedorService.recebimentosLiquidados(id, query);
+  @ApiBody({ type: CreateIndicacaoDto })
+  criarIndicacao(
+    @Param('vendedorId', ParseUUIDPipe) vendedorId: string,
+    @Body() data: CreateIndicacaoDto,
+  ) {
+    return this.vendedorService.criarIndicacao(vendedorId, data);
   }
 
-  @ApiOkResponse({ type: EstabelecimentoRecebimentosDto })
-  @ApiQuery({
-    name: 'page',
-    type: Number,
-    default: 1,
-    required: true,
-  })
-  @ApiQuery({
-    name: 'start_date',
-    type: String,
-    example: '2025-05-01',
-    required: true,
-  })
-  @ApiQuery({
-    name: 'finish_date',
-    type: String,
-    example: '2025-05-31',
-    required: true,
+  @Get(':vendedorId/indicacoes')
+  @ApiOperation({
+    summary: 'Lista todos os estabelecimentos indicados por um vendedor.',
   })
   @ApiParam({
-    name: 'estabelecimento_id',
-    description: 'ID do estabelecimento',
+    name: 'vendedorId',
+    description: 'UUID do vendedor',
+    type: String,
+    example: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
   })
-  @ApiOperation({
-    summary: 'Recebimentos do vendedor no estabelecimento e periodo informados',
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de indicações retornada com sucesso.',
+    type: IndicacaoResponseDto,
+    isArray: true,
   })
-  @Get('recebimentos/:estabelecimento_id')
-  estabelecimentoRecebimentos(
-    @Param('estabelecimento_id') estabelecimento_id: number,
-    @Query() query: RecebimentosQueryDto,
+  listarIndicacoesPorVendedor(
+    @Param('vendedorId', ParseUUIDPipe) vendedorId: string,
   ) {
-    return this.vendedorService.estabelecimentoRecebimentosLiquidados(
-      +estabelecimento_id,
-      query,
-    );
+    return this.vendedorService.listarIndicacoesPorVendedor(vendedorId);
   }
 
-  @ApiParam({
-    name: 'vendedor_id',
-    description: 'ID do vendedor',
-  })
-  @ApiParam({
-    name: 'estabelecimento_id',
-    description: 'ID do estabelecimento',
-  })
+  @Patch(':vendedorId/indicacoes/:estabelecimentoId')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({
-    summary: 'Alterar a taxa de comissão do estabelecimento',
+    summary: 'Atualiza a taxa de comissão de uma indicação específica.',
   })
-  @Patch(':vendedor_id/estabelecimentos/:estabelecimento_id')
-  alterarTaxaComissao(
-    @Param('vendedor_id') vendedor_id: string,
-    @Param('estabelecimento_id') estabelecimento_id: number,
-    @Body() data: AlterarTaxaComissaoDto,
+  @ApiParam({
+    name: 'vendedorId',
+    description: 'UUID do vendedor',
+    type: String,
+  })
+  @ApiParam({
+    name: 'estabelecimentoId',
+    description: 'UUID do estabelecimento',
+    type: String,
+  })
+  @ApiResponse({
+    status: 204,
+    description: 'Taxa de comissão atualizada com sucesso.',
+  })
+  atualizarTaxaIndicacao(
+    @Param('vendedorId', ParseUUIDPipe) vendedorId: string,
+    @Param('estabelecimentoId', ParseUUIDPipe) estabelecimentoId: string,
+    @Body() data: UpdateIndicacaoDto,
   ) {
-    return this.vendedorService.atualizarTaxaComissao({
-      vendedor_id,
-      estabelecimento_id: +estabelecimento_id,
+    return this.vendedorService.atualizarTaxaIndicacao(
+      vendedorId,
+      estabelecimentoId,
       data,
-    });
+    );
+  }
+
+  @Delete(':vendedorId/indicacoes/:estabelecimentoId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({
+    summary:
+      'Remove o vínculo (indicação) entre um vendedor e um estabelecimento.',
+  })
+  @ApiParam({
+    name: 'vendedorId',
+    description: 'UUID do vendedor',
+    type: String,
+  })
+  @ApiParam({
+    name: 'estabelecimentoId',
+    description: 'UUID do estabelecimento',
+    type: String,
+  })
+  @ApiResponse({ status: 204, description: 'Vínculo removido com sucesso.' })
+  removerIndicacao(
+    @Param('vendedorId', ParseUUIDPipe) vendedorId: string,
+    @Param('estabelecimentoId', ParseUUIDPipe) estabelecimentoId: string,
+  ) {
+    return this.vendedorService.removerIndicacao(vendedorId, estabelecimentoId);
   }
 }

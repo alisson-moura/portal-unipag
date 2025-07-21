@@ -6,10 +6,10 @@ import { CalendarIcon, Filter } from "lucide-react";
 import { useState } from "react";
 import Combobox from "@/components/ui/combobox";
 import { EstabelecimentoRecebiveis } from "./estabelecimeno-recebiveis";
-import { useCeoPagControllerEstabelecimentos } from "@/gen";
+import { useEstabelecimentosControllerFindAll } from "@/gen";
 
 export function EstabelecimentoRecebiveisPage() {
-  const { data, isLoading } = useCeoPagControllerEstabelecimentos({ page: 1 })
+  const { data, isLoading } = useEstabelecimentosControllerFindAll()
   const [estabelecimento, setEstabelecimento] = useState<string>("")
   const [startDate, setStartDate] = useState<string>("")
   const [endDate, setEndDate] = useState<string>("")
@@ -42,7 +42,7 @@ export function EstabelecimentoRecebiveisPage() {
                 emptyMessage=""
                 searchPlaceholder="Procure por estabelecimentos"
                 placeholder={""}
-               data={data?.data.data.map(e => ({
+               data={data?.data.map(e => ({
                 label: e.social_reason,
                 value: `${e.id}`
               })) ?? []}
@@ -73,7 +73,7 @@ export function EstabelecimentoRecebiveisPage() {
           </div>
         </CardContent>
       </Card>
-      {estabelecimento && startDate && endDate && <EstabelecimentoRecebiveis estabelecimento_id={parseInt(estabelecimento)} finish_date={endDate} start_date={startDate} />}
+      {estabelecimento && startDate && endDate && <EstabelecimentoRecebiveis estabelecimento_id={estabelecimento} finish_date={endDate} start_date={startDate} />}
     </div>
   );
 }

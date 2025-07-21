@@ -14,30 +14,50 @@ enum Role {
 }
 
 model Usuario {
-  id               String            @id @default(uuid())
-  nome             String
-  email            String            @unique
-  telefone         String?
-  senha            String
-  role             Role
-  criado_em        DateTime          @default(now())
-  ativo            Boolean           @default(true)
-  estabelecimentos Estabelecimento[]
+  id        String   @id @default(uuid())
+  nome      String
+  email     String   @unique
+  telefone  String?
+  senha     String
+  role      Role
+  criado_em DateTime @default(now())
+  ativo     Boolean  @default(true)
+
+  indicacoes Indicacao[]
 
   @@map("usuarios")
 }
 
-model Estabelecimento {
-  estabelecimento_id Int      @id
-  vendedor_id        String
-  taxa_comissao      Int      @default(20)
-  numero_documento   String
-  razao_social       String
-  nome               String
-  status             Int      @default(1)
-  atribuido_em       DateTime @default(now())
-  vendedor           Usuario  @relation(fields: [vendedor_id], references: [id])
+model EstabelecimentoCeoPag {
+  id              String    @id @default(uuid())
+  ceo_pag_id      Int
+  document_number String
+  social_reason   String
+  name            String
+  status          Int
+  account_source  String
+  created_at      DateTime
+  updated_at      DateTime?
+  deleted_at      DateTime?
 
-  @@unique([estabelecimento_id])
-  @@map("estabelecimentos")
+  indicacao Indicacao?
+
+  @@unique([ceo_pag_id, account_source])
+  @@map("estabelecimentos_ceopag")
+}
+
+model Indicacao {
+  id            String  @id @default(uuid())
+  taxa_comissao Decimal @db.Decimal(10, 2)
+
+  usuario_id String
+  usuario    Usuario @relation(fields: [usuario_id], references: [id])
+
+  estabelecimento_id String
+  estabelecimento    EstabelecimentoCeoPag @relation(fields: [estabelecimento_id], references: [id])
+
+  atribuido_em DateTime @default(now())
+
+  @@unique([estabelecimento_id], map: "indicacoes_estabelecimento_unique")
+  @@map("indicacoes")
 }

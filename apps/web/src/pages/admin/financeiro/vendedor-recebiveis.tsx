@@ -3,12 +3,12 @@ import { ListaVendedorRecebimentos } from "./lista-vendedor-recebimentos";
 import { formatCurrency } from "@/lib/format";
 import { FallbackNoData } from "./metric-skeleton";
 import { MetricCard } from "./metric-card";
-
 import { RecebiveisSkeleton } from "./metric-skeleton";
-import { useVendedorControllerRecebimentos } from "@/gen";
+import { useRelatoriosControllerRecebimentosVendedor } from "@/gen";
+
 
 export function VendedorRecebiveis({ vendedor_id, start_date, finish_date }: { vendedor_id: string, finish_date: string, start_date: string }) {
-    const { isLoading, data } = useVendedorControllerRecebimentos(vendedor_id, {start_date, finish_date})
+    const { isLoading, data } = useRelatoriosControllerRecebimentosVendedor(vendedor_id, {start_date, finish_date})
 
     if (isLoading) return <RecebiveisSkeleton />
     if (!data) return <FallbackNoData />

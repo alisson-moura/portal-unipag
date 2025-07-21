@@ -4,26 +4,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import {
-  AlterarTaxaComissaoDto,
-  AtribuirEstabelecimentoDto,
-  EstabelecimentoDto,
-} from './dto/estabelecimento.dto';
 import { Usuario } from '@prisma/client';
-import { PaginatedDto } from 'src/config/paginated.dto';
-import {
-  EstabelecimentoRecebimentosDto,
-  RecebimentosQueryDto,
-  VendedorRecebimentosDto,
-} from './dto/recebimentos.dto';
-import { ApiCeoPagService } from 'src/ceopag/api.service';
+import { CreateIndicacaoDto } from './dto/create-indicacao.dto';
+import { UpdateIndicacaoDto } from './dto/update-indicacao.dto';
 
 @Injectable()
 export class VendedorService {
-  constructor(
-    private database: PrismaService,
-    private apiCeoPag: ApiCeoPagService,
-  ) {}
+  constructor(private database: PrismaService) {}
 
   private async findOrThrow(id: string): Promise<Usuario> {
     const vendedor = await this.database.usuario.findUnique({
@@ -35,13 +22,7 @@ export class VendedorService {
     return vendedor;
   }
 
-  async findAll(params: { page: number }) {
-    const page = params.page ?? 1;
-    const size = 100;
-
-    const total = await this.database.usuario.count({
-      where: { role: 'VENDEDOR' },
-    });
+  async findAll() {
     const vendedores = await this.database.usuario.findMany({
       where: {
         role: 'VENDEDOR',
@@ -49,202 +30,116 @@ export class VendedorService {
       orderBy: {
         criado_em: 'asc',
       },
-      skip: (page - 1) * size,
-      take: size,
     });
 
-    return {
-      total,
-      page,
-      size,
-      results: vendedores,
-    };
+    return vendedores;
   }
 
-  async atribuirEstabelecimento(
+  async criarIndicacao(
     vendedor_id: string,
-    data: AtribuirEstabelecimentoDto,
+    data: CreateIndicacaoDto,
   ): Promise<void> {
     await this.findOrThrow(vendedor_id);
 
-    const estabelecimento = await this.database.estabelecimento.findUnique({
-      where: { estabelecimento_id: data.estabelecimento_id },
-    });
-    if (estabelecimento)
-      throw new BadRequestException(
-        'Estabelecimento já está atribuido a um vendedor. Desatribua antes de tentar novamente.',
+    // 1. Verifica se o estabelecimento existe
+    const estabelecimento =
+      await this.database.estabelecimentoCeoPag.findUnique({
+        where: { id: data.estabelecimento_id },
+      });
+    if (!estabelecimento) {
+      throw new NotFoundException(
+        `Estabelecimento com ID "${data.estabelecimento_id}" não encontrado.`,
       );
+    }
 
-    await this.database.estabelecimento.create({
-      data: {
-        vendedor_id,
-        ...data,
-      },
-    });
-  }
-
-  async desatribuirEstabelecimento(
-    vendedor_id: string,
-    estabelecimento_id: number,
-  ): Promise<void> {
-    await this.findOrThrow(vendedor_id);
-
-    const estabelecimento = await this.database.estabelecimento.findUnique({
-      where: { estabelecimento_id, vendedor_id },
-    });
-
-    if (!estabelecimento)
-      throw new BadRequestException(
-        'Estabelecimento não está atribuido para este vendedor.',
-      );
-
-    await this.database.estabelecimento.delete({
-      where: { estabelecimento_id, vendedor_id },
-    });
-  }
-
-  async estabelecimentosAtribuidoPara(
-    vendedor_id: string,
-    params: { page: number },
-  ): Promise<PaginatedDto<EstabelecimentoDto>> {
-    const page = params.page ?? 1;
-    const size = 100;
-
-    await this.findOrThrow(vendedor_id);
-
-    const total = await this.database.estabelecimento.count({
-      where: { vendedor_id },
-    });
-    const estabelecimentos = await this.database.estabelecimento.findMany({
+    // 2. Verifica se o estabelecimento JÁ POSSUI uma indicação
+    const indicacaoExistente = await this.database.indicacao.findUnique({
       where: {
-        vendedor_id,
+        estabelecimento_id: data.estabelecimento_id,
       },
-      orderBy: {
-        estabelecimento_id: 'asc',
-      },
-      skip: (page - 1) * size,
-      take: size,
     });
 
-    return {
-      page,
-      size,
-      total,
-      results: estabelecimentos,
-    };
-  }
-
-  async atualizarTaxaComissao({
-    estabelecimento_id,
-    vendedor_id,
-    data,
-  }: {
-    vendedor_id: string;
-    estabelecimento_id: number;
-    data: AlterarTaxaComissaoDto;
-  }) {
-    const estabelecimento = await this.database.estabelecimento.findUnique({
-      where: { estabelecimento_id, vendedor_id },
-    });
-    if (!estabelecimento)
+    if (indicacaoExistente) {
       throw new BadRequestException(
-        'Estabelecimento não está atribuido para este vendedor.',
+        'Este estabelecimento já foi indicado por um vendedor.',
       );
+    }
 
-    await this.database.estabelecimento.update({
-      where: { estabelecimento_id, vendedor_id },
-      data,
-    });
-  }
-
-  async recebimentosLiquidados(
-    vendedor_id: string,
-    query: RecebimentosQueryDto,
-  ): Promise<VendedorRecebimentosDto> {
-    const estabelecimentos = await this.database.estabelecimento.findMany({
-      where: { vendedor_id },
-    });
-
-    const recebimentos = await Promise.all(
-      estabelecimentos.map(async (estabelecimento) => {
-        const recebimentoCeoPag = await this.apiCeoPag.recebimentosLiquidados({
-          mid: estabelecimento.estabelecimento_id,
-          ...query,
-        });
-
-        const taxa_comissao = estabelecimento.taxa_comissao / 100;
-        const mdr = Math.round(recebimentoCeoPag.totais.mdr * taxa_comissao);
-
-        return {
-          ...estabelecimento,
-          tpv: recebimentoCeoPag.totais.gross_amount,
-          mdr,
-          rav: recebimentoCeoPag.totais.rav,
-          liquido: recebimentoCeoPag.totais.net_amount,
-        };
-      }),
-    );
-
-    return {
-      totais: recebimentos.reduce(
-        (acc, current) => ({
-          mdr: current.mdr + acc.mdr,
-          tpv: current.tpv + acc.tpv,
-          rav: current.rav + acc.rav,
-          liquido: current.liquido + acc.liquido,
-        }),
-        {
-          mdr: 0,
-          tpv: 0,
-          rav: 0,
-          liquido: 0,
-        },
-      ),
-      recebimentos,
-    };
-  }
-
-  async estabelecimentoRecebimentosLiquidados(
-    estabelecimento_id: number,
-    query: RecebimentosQueryDto,
-  ): Promise<EstabelecimentoRecebimentosDto> {
-    const estabelecimento = await this.database.estabelecimento.findUnique({
-      where: { estabelecimento_id },
-    });
-    if (!estabelecimento)
-      throw new BadRequestException('Atribua o estabelecimento a um vendedor');
-
-    const recebimentoCeoPag = await this.apiCeoPag.recebimentosLiquidados({
-      mid: estabelecimento_id,
-      ...query,
-    });
-
-    const taxa_comissao = estabelecimento.taxa_comissao / 100;
-    const recebimentos = recebimentoCeoPag.paids.data.map((paid) => ({
-      data_recebimento: paid.payment_date,
-      tpv: paid.gross_amount,
-      mdr: Math.round(paid.mdr * taxa_comissao),
-      rav: paid.rav,
-      liquido: paid.net_amount,
-      pagamentos: paid.payables.map((paid) => ({
-        ...paid,
-        payables_mdr: Math.round(paid.payables_mdr * taxa_comissao),
-      })),
-    }));
-
-    return {
-      totais: {
-        tpv: recebimentoCeoPag.totais.gross_amount,
-        mdr: Math.round(recebimentoCeoPag.totais.mdr * taxa_comissao),
-        rav: recebimentoCeoPag.totais.rav,
-        liquido: recebimentoCeoPag.totais.net_amount,
+    // 3. Cria a indicação
+    await this.database.indicacao.create({
+      data: {
+        usuario_id: vendedor_id,
+        estabelecimento_id: data.estabelecimento_id,
+        taxa_comissao: data.taxa_comissao,
       },
-      recebimentos,
-      page: recebimentoCeoPag.paids.total,
-      total: recebimentoCeoPag.paids.total,
-      total_pages: recebimentoCeoPag.paids.total_pages,
-      next_page: recebimentoCeoPag.paids.next_page,
-      per_page: recebimentoCeoPag.paids.per_page,
-    };
+    });
+  }
+
+  async removerIndicacao(
+    vendedor_id: string,
+    estabelecimento_id: string,
+  ): Promise<void> {
+    await this.findOrThrow(vendedor_id);
+
+    // Encontra a indicação específica para este vendedor e estabelecimento
+    const indicacao = await this.database.indicacao.findFirst({
+      where: {
+        estabelecimento_id: estabelecimento_id,
+        usuario_id: vendedor_id,
+      },
+    });
+
+    if (!indicacao) {
+      throw new NotFoundException(
+        'Vínculo entre este vendedor e estabelecimento não encontrado.',
+      );
+    }
+
+    await this.database.indicacao.delete({
+      where: { id: indicacao.id },
+    });
+  }
+
+  async listarIndicacoesPorVendedor(vendedor_id: string) {
+    await this.findOrThrow(vendedor_id);
+
+    const indicacoes = await this.database.indicacao.findMany({
+      where: {
+        usuario_id: vendedor_id,
+      },
+      include: {
+        estabelecimento: true,
+      },
+    });
+
+    return indicacoes;
+  }
+
+  async atualizarTaxaIndicacao(
+    vendedor_id: string,
+    estabelecimento_id: string,
+    data: UpdateIndicacaoDto,
+  ) {
+    await this.findOrThrow(vendedor_id);
+
+    const indicacao = await this.database.indicacao.findFirst({
+      where: {
+        estabelecimento_id: estabelecimento_id,
+        usuario_id: vendedor_id,
+      },
+    });
+
+    if (!indicacao) {
+      throw new NotFoundException(
+        'Vínculo entre este vendedor e estabelecimento não encontrado.',
+      );
+    }
+
+    await this.database.indicacao.update({
+      where: { id: indicacao.id },
+      data: {
+        taxa_comissao: data.taxa_comissao,
+      },
+    });
   }
 }

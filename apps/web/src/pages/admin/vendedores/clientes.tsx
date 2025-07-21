@@ -15,44 +15,55 @@ import { Building2, Search, X, Minus } from "lucide-react"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import NumberInput from "@/components/ui/number-input"
-import { useVendedorControllerAlterarTaxaComissao, useVendedorControllerDesatribuirEstabelecimento, useVendedorControllerEstabelecimentosAtribuidosPara } from "@/gen"
 import { queryClient } from "@/lib/query-client"
+import {
+  useVendedorControllerAtualizarTaxaIndicacao,
+  useVendedorControllerListarIndicacoesPorVendedor,
+  useVendedorControllerRemoverIndicacao
+} from "@/gen"
+import { toast } from "sonner"
 
 export function Clientes({ id }: { id: string }) {
-  const { data, isLoading, isRefetching } = useVendedorControllerEstabelecimentosAtribuidosPara(id, { page: 1 }, { query: { queryKey: ["estabelecimentos-atribuidos", id] } })
-  const { mutate, isPending } = useVendedorControllerDesatribuirEstabelecimento({
+  const { data, isLoading, isRefetching } = useVendedorControllerListarIndicacoesPorVendedor(id, { query: { queryKey: ["estabelecimentos-atribuidos", id] } })
+  const { mutate, isPending } = useVendedorControllerRemoverIndicacao({
     mutation: {
       onSuccess: (_, variables) => {
-        queryClient.invalidateQueries({ queryKey: ['estabelecimentos-atribuidos', variables.id] });
-      }
+        queryClient.invalidateQueries({ queryKey: ['estabelecimentos-atribuidos', variables.vendedorId] });
+        toast.success(`Estabelecimento desatribuído com sucesso!`);
+      },
+      onError: (error) => {
+        toast.error(error.response?.data.message || "Erro ao desatribuir estabelecimento");
+      },
     }
   })
-  const { mutate: mutateTaxaComissao, isPending: isPendingTaxaComissao } = useVendedorControllerAlterarTaxaComissao({
+  const { mutate: mutateTaxaComissao, isPending: isPendingTaxaComissao } = useVendedorControllerAtualizarTaxaIndicacao({
     mutation: {
       onSuccess: (_, variables) => {
-        queryClient.invalidateQueries({ queryKey: ['estabelecimentos-atribuidos', variables.vendedor_id] });
-      }
+        queryClient.invalidateQueries({ queryKey: ['estabelecimentos-atribuidos', variables.vendedorId] });
+      },
+      onError: (error) => {
+        toast.error(error.response?.data.message || "Erro ao atualizar taxa de comissão");
+      },
     }
   })
   const [searchTerm, setSearchTerm] = useState("")
 
-  const estabelecimentosFiltrados = data?.data.results?.filter(
-    (estabelecimento) =>
-      estabelecimento.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      estabelecimento.razao_social.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      estabelecimento.numero_documento.includes(searchTerm),
+  const estabelecimentosFiltrados = data?.data.filter(
+    (indicacao) =>
+      indicacao.estabelecimento.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      indicacao.estabelecimento.social_reason.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      indicacao.estabelecimento.document_number.includes(searchTerm),
   )
 
-  const handleDesatribuir = (estabelecimentoId: number) => {
+  const handleDesatribuir = (estabelecimentoId: string) => {
     console.log(`Desatribuindo estabelecimento ${estabelecimentoId} ao vendedor ${id}`)
-    mutate({ estabelecimento_id: estabelecimentoId, id });
+    mutate({ vendedorId: id, estabelecimentoId: estabelecimentoId });
   }
 
-  const handleChangeTaxaComissao = (estabelecimento_id: number, taxa_comissao: number) => {
-    console.log(`Alterando taxa de comissão do estabelecimento ${estabelecimento_id} para ${taxa_comissao}%`)
+  const handleChangeTaxaComissao = (estabelecimento_id: string, taxa_comissao: number) => {
     mutateTaxaComissao({
-      estabelecimento_id,
-      vendedor_id: id,
+      estabelecimentoId: estabelecimento_id,
+      vendedorId: id,
       data: {
         taxa_comissao
       }
@@ -106,30 +117,30 @@ export function Clientes({ id }: { id: string }) {
         ) :
           <ScrollArea className="h-[400px] w-full rounded-md border p-4">
             <div className="space-y-4">
-              {data?.data.results?.map((estabelecimento, index) => (
-                <div key={estabelecimento.estabelecimento_id}>
+              {estabelecimentosFiltrados?.map((indicacao, index) => (
+                <div key={indicacao.estabelecimento.id}>
                   <div className="flex items-start justify-between space-x-4 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors">
                     <div className="flex-1 space-y-2">
                       <div className="flex items-center gap-2">
-                        <h4 className="font-semibold text-sm leading-none">{estabelecimento.nome}</h4>
+                        <h4 className="font-semibold text-sm leading-none">{indicacao.estabelecimento.name}</h4>
                       </div>
-                      <p className="text-sm text-muted-foreground">{estabelecimento.razao_social}</p>
-                      <p className="text-xs font-mono text-muted-foreground">{estabelecimento.numero_documento}</p>
+                      <p className="text-sm text-muted-foreground">{indicacao.estabelecimento.social_reason}</p>
+                      <p className="text-xs font-mono text-muted-foreground">{indicacao.estabelecimento.document_number}</p>
                     </div>
                     <div className="w-[140px]">
-                      <Button size="sm" disabled={isRefetching || isPending || isPendingTaxaComissao} onClick={() => handleDesatribuir(estabelecimento.estabelecimento_id)} className="shrink-0 w-full">
+                      <Button size="sm" disabled={isRefetching || isPending || isPendingTaxaComissao} onClick={() => handleDesatribuir(indicacao.estabelecimento.id)} className="shrink-0 w-full">
                         <Minus className="h-4 w-4 mr-1" />
                         Desatribuir
                       </Button>
                       <NumberInput
                         disabled={isPendingTaxaComissao || isRefetching || isPending}
-                        defaultValue={estabelecimento.taxa_comissao}
+                        defaultValue={indicacao.taxa_comissao}  
                         minValue={5}
                         maxValue={100}
                         step={5}
                         label="Taxa de Comissão (%)"
                         name={"taxa_comissao"}
-                        onChange={(value: number) => handleChangeTaxaComissao(estabelecimento.estabelecimento_id, value)}
+                        onChange={(value: number) => handleChangeTaxaComissao(indicacao.estabelecimento.id, value)}
                       />
                     </div>
                   </div>

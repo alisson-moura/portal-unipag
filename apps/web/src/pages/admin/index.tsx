@@ -20,6 +20,7 @@ import { formatCurrency } from "@/lib/format";
 import { Store, Users, Wallet } from "lucide-react";
 import { MetricCard } from "./financeiro/metric-card";
 import { RankingVendedoresChart } from "@/components/ranking-vendedores-chart";
+import { format } from "date-fns";
 
 const formSchema = z.object({
   range: z.object({
@@ -47,8 +48,8 @@ export function DashboardPage() {
     useRelatoriosControllerTotalEstabelecimentos();
   const { data: totalVendedores } = useRelatoriosControllerTotalVendedores();
   const { data: comissaoTotal } = useRelatoriosControllerComissao({
-    finish_date: range.to.toISOString(),
-    start_date: range.from.toISOString(),
+    finish_date: format(range.to, 'yyyy-MM-dd'),
+    start_date: format(range.from, 'yyyy-MM-dd'),
   });
 
   const onSubmit = (data: FormValues) => {
@@ -121,7 +122,7 @@ export function DashboardPage() {
           />
         ))}
       </div>
-      <RankingVendedoresChart start_date={range.from.toISOString()} finish_date={range.to.toISOString()}  />
+      <RankingVendedoresChart start_date={format(range.from, 'yyyy-MM-dd')} finish_date={format(range.to, 'yyyy-MM-dd')}  />
     </div>
   );
 }

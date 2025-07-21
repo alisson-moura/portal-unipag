@@ -5,12 +5,17 @@ import { AxiosError } from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { Env } from '../config/env.schema';
 import { PrismaService } from '../prisma/prisma.service';
-import { PaginatedEstabelecimentoDto } from './dto/estabelecimento.dto';
+import {
+  EstabelecimentoCeoPagDto,
+  PaginatedEstabelecimentoDto,
+} from './dto/estabelecimento.dto';
 import {
   GetRecebimentosCeoPagParamsDto,
   RecebimentosCeoPagDto,
 } from './dto/recebimentos.dto';
 import { LoginResponseDto } from './dto/login.dto';
+
+type AccountIdentifier = 'ONE' | 'TWO';
 
 @Injectable()
 export class ApiCeoPagService {
@@ -28,38 +33,123 @@ export class ApiCeoPagService {
     this.PREFIX = configService.getOrThrow('MOVINGPAY_PREFIX');
   }
 
-  async login() {
+  async loginToAllAccounts() {
+    try {
+      const [loginOneResult, loginTwoResult] = await Promise.all([
+        this.loginByAccount('ONE'),
+        this.loginByAccount('TWO'),
+      ]);
+      return {
+        accountOne: loginOneResult,
+        accountTwo: loginTwoResult,
+      };
+    } catch (error) {
+      console.error('Falha no processo de login em lote.', error);
+      throw new Error('Não foi possível fazer login em uma ou mais contas.');
+    }
+  }
+
+  private async loginByAccount(
+    account: AccountIdentifier,
+  ): Promise<LoginResponseDto> {
     const url = `${this.BASE_URL}/${this.PREFIX}/${this.VERSION_API}/acessar`;
-    const headers = {
-      'Content-Type': 'application/json',
-    };
+
+    const emailKey = `MOVINGPAY_ACCOUNT_${account}_EMAIL`;
+    const passwordKey = `MOVINGPAY_ACCOUNT_${account}_PASSWORD`;
+
     const body = {
-      email: this.configService.get('MOVINGPAY_API_EMAIL', {
-        infer: true,
-      }),
-      password: this.configService.get('MOVINGPAY_API_PASSWORD', {
-        infer: true,
-      }),
+      email: this.configService.get<string>(emailKey, { infer: true }),
+      password: this.configService.get<string>(passwordKey, { infer: true }),
     };
+
     const { data } = await firstValueFrom(
-      this.httpService.post<LoginResponseDto>(url, body, { headers }).pipe(
-        catchError((error: AxiosError) => {
-          console.error(error);
-          throw error;
-        }),
-      ),
+      this.httpService
+        .post<LoginResponseDto>(url, body, {
+          headers: { 'Content-Type': 'application/json' },
+        })
+        .pipe(
+          catchError((error: AxiosError) => {
+            console.error(
+              `Erro ao fazer login na conta ${account}:`,
+              error.message,
+            );
+            throw error;
+          }),
+        ),
     );
+
     return data;
   }
 
-  async listarEstabelecimentos(params: { page: number; busca: string }) {
-    const auth = await this.login();
+  /**
+   * @description Busca estabelecimentos de TODAS as contas, unifica, ordena e pagina o resultado.
+   * Este é o método que seu controller deve chamar.
+   */
+  async todosEstabelecimentos() {
+    const { accountOne, accountTwo } = await this.loginToAllAccounts();
+
+    const [estabelecimentosAccOne, estabelecimentosAccTwo] = await Promise.all([
+      this.fetchAllEstabelecimentosForAccount(accountOne, 'ONE'),
+      this.fetchAllEstabelecimentosForAccount(accountTwo, 'TWO'),
+    ]);
+
+    const allEstabelecimentos = [
+      ...estabelecimentosAccOne,
+      ...estabelecimentosAccTwo,
+    ];
+
+    allEstabelecimentos.sort((a, b) =>
+      a.social_reason.localeCompare(b.social_reason),
+    );
+
+    return allEstabelecimentos;
+  }
+
+  /**
+   * @private
+   * @description Busca TODOS os estabelecimentos de UMA conta, percorrendo todas as páginas.
+   */
+  private async fetchAllEstabelecimentosForAccount(
+    auth: LoginResponseDto,
+    accountSource: AccountIdentifier,
+  ): Promise<EstabelecimentoCeoPagDto[]> {
+    const firstPageResponse = await this.fetchEstabelecimentosPage(auth, 1);
+    const allEstabelecimentos = [...firstPageResponse.data];
+    const lastPage = firstPageResponse.lastPage;
+
+    if (lastPage > 1) {
+      const pagePromises: Promise<PaginatedEstabelecimentoDto>[] = [];
+      for (let page = 2; page <= lastPage; page++) {
+        pagePromises.push(this.fetchEstabelecimentosPage(auth, page));
+      }
+      const remainingPagesResults = await Promise.all(pagePromises);
+
+      remainingPagesResults.forEach((result) => {
+        allEstabelecimentos.push(...result.data);
+      });
+    }
+
+    const mappedEstabelecimentos = allEstabelecimentos.map((est) => ({
+      ...est,
+      account_source: accountSource,
+    }));
+
+    return mappedEstabelecimentos;
+  }
+
+  /**
+   * @private
+   * @description Busca UMA PÁGINA de estabelecimentos de uma conta específica.
+   */
+  private async fetchEstabelecimentosPage(
+    auth: LoginResponseDto,
+    page: number,
+  ): Promise<PaginatedEstabelecimentoDto> {
     const url = new URL(
       `${this.BASE_URL}/${this.PREFIX}/${this.VERSION_API}/estabelecimentos`,
     );
-    url.searchParams.append('page', String(params.page ?? '1'));
-    url.searchParams.append('limit', String('100'));
-    if (params.busca) url.searchParams.append('busca', String(params.page));
+    url.searchParams.append('page', String(page));
+    url.searchParams.append('limit', '100');
 
     const headers = {
       'Content-Type': 'application/json',
@@ -67,7 +157,6 @@ export class ApiCeoPagService {
       Customer: auth.customers_id,
       Vendor: auth.vendor_id,
     };
-
     const { data } = await firstValueFrom(
       this.httpService
         .get<PaginatedEstabelecimentoDto>(url.toString(), { headers })
@@ -86,8 +175,17 @@ export class ApiCeoPagService {
 
   async recebimentosLiquidados(
     params: GetRecebimentosCeoPagParamsDto,
-  ): Promise<RecebimentosCeoPagDto> {
-    const auth = await this.login();
+  ): Promise<RecebimentosCeoPagDto | null> {
+    const estabelecimento = await this.prisma.estabelecimentoCeoPag.findUnique({
+      where: { id: params.id },
+    });
+
+    if (!estabelecimento) return null;
+
+    const auth = await this.loginByAccount(
+      estabelecimento.account_source as AccountIdentifier,
+    );
+
     const url = `${this.BASE_URL}/${this.PREFIX}/${this.VERSION_API}/financeiro/recebiveis/liquidados`;
     const headers = {
       'Content-Type': 'application/json',
@@ -97,6 +195,7 @@ export class ApiCeoPagService {
     };
     const queryParams = {
       ...params,
+      id: estabelecimento.ceo_pag_id,
       page: params.page ?? 1,
       report_type: 'consolidated',
     };

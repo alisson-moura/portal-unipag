@@ -1,5 +1,5 @@
 export class GetRecebimentosCeoPagParamsDto {
-  mid: number;
+  id: string;
   start_date: string;
   finish_date: string;
   page?: number;

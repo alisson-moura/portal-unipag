@@ -4,7 +4,9 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { HttpError } from './config/http-error.dto';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['verbose', 'log'],
+  });
   app.enableCors();
   app.setGlobalPrefix('api');
 

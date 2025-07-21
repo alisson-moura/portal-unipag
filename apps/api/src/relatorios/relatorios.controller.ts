@@ -1,12 +1,39 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { RelatoriosService } from './relatorios.service';
-import { ApiOkResponse, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+} from '@nestjs/swagger';
 import { TotalDto } from './dto/total.dto';
+import { PeriodQueryDto } from './dto/period-query';
+import { VendedorRecebimentosDto } from './dto/vendedor-recebimentos.dto';
+import { EstabelecimentoRecebimentosDto } from './dto/estabelecimento-recebimentos.dto';
 import { RankingVendedoresDto } from './dto/ranking-vendedores.dto';
 
+@ApiBearerAuth()
 @Controller('relatorios')
 export class RelatoriosController {
   constructor(private readonly relatoriosService: RelatoriosService) {}
+
+  @ApiOkResponse({ type: TotalDto })
+  @ApiOperation({
+    summary: 'Total de comissão no período informado',
+  })
+  @Get('comissao')
+  comissao(@Query() query: PeriodQueryDto) {
+    return this.relatoriosService.totalComissao(query);
+  }
+
+  @ApiOkResponse({ type: RankingVendedoresDto, isArray: true })
+  @ApiOperation({
+    summary: 'Comissão por vendedor no perido informado',
+  })
+  @Get('vendedores/ranking')
+  rankingMdrVendedores(@Query() query: PeriodQueryDto) {
+    return this.relatoriosService.comissaoVendedores(query);
+  }
 
   @ApiOkResponse({ type: TotalDto })
   @ApiOperation({ summary: 'Total de vendedores ativos' })
@@ -24,47 +51,35 @@ export class RelatoriosController {
     return this.relatoriosService.countEstabelecimentos();
   }
 
-  @ApiQuery({
-    name: 'start_date',
-    type: String,
-    example: '2025-05-01',
-    required: true,
+  @ApiParam({
+    name: 'id',
+    description: 'ID do vendedor',
   })
-  @ApiQuery({
-    name: 'finish_date',
-    type: String,
-    example: '2025-05-31',
-    required: true,
-  })
-  @ApiOkResponse({ type: TotalDto })
   @ApiOperation({
-    summary: 'Total de comissão no período informado',
+    summary: 'Recebimentos do vendedor no período informado',
   })
-  @Get('comissao')
-  comissao(@Query() query: { start_date: string; finish_date: string }) {
-    return this.relatoriosService.totalComissao(query);
+  @ApiOkResponse({ type: VendedorRecebimentosDto })
+  @Get('vendedores/:id')
+  recebimentosVendedor(
+    @Param('id') id: string,
+    @Query() query: PeriodQueryDto,
+  ) {
+    return this.relatoriosService.recebimentosVendedor(id, query);
   }
 
-  @ApiQuery({
-    name: 'start_date',
-    type: String,
-    example: '2025-05-01',
-    required: true,
+  @ApiParam({
+    name: 'id',
+    description: 'ID do estabelecimento',
   })
-  @ApiQuery({
-    name: 'finish_date',
-    type: String,
-    example: '2025-05-31',
-    required: true,
-  })
-  @ApiOkResponse({ type: RankingVendedoresDto, isArray: true })
   @ApiOperation({
-    summary: 'Comissão por vendedor no perido informado',
+    summary: 'Recebimentos do vendedor no estabelecimento e periodo informados',
   })
-  @Get('vendedores/ranking')
-  rankingMdrVendedores(
-    @Query() query: { start_date: string; finish_date: string },
+  @ApiOkResponse({ type: EstabelecimentoRecebimentosDto })
+  @Get('estabelecimentos/:id')
+  recebimentosEstabelecimento(
+    @Param('id') id: string,
+    @Query() query: PeriodQueryDto,
   ) {
-    return this.relatoriosService.comissaoVendedores(query);
+    return this.relatoriosService.recebimentosEstabelecimento(id, query);
   }
 }
