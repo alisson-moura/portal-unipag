@@ -61,7 +61,7 @@ export class RelatoriosService {
           liquido: 0,
         };
 
-      const taxa_comissao = Number(indicacao.taxa_comissao) / 100;
+      const taxa_comissao = indicacao.taxa_comissao / 100;
       const mdr = recebimentoCeoPag.totais.mdr * taxa_comissao;
 
       return {

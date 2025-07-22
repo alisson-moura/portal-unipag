@@ -48,10 +48,9 @@ model EstabelecimentoCeoPag {
 
 model Indicacao {
   id            String  @id @default(uuid())
-  taxa_comissao Decimal @db.Decimal(10, 2)
-
-  usuario_id String
-  usuario    Usuario @relation(fields: [usuario_id], references: [id])
+  taxa_comissao Int
+  usuario_id    String
+  usuario       Usuario @relation(fields: [usuario_id], references: [id])
 
   estabelecimento_id String
   estabelecimento    EstabelecimentoCeoPag @relation(fields: [estabelecimento_id], references: [id])

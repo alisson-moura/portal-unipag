@@ -195,7 +195,7 @@ export class ApiCeoPagService {
     };
     const queryParams = {
       ...params,
-      id: estabelecimento.ceo_pag_id,
+      mid: estabelecimento.ceo_pag_id,
       page: params.page ?? 1,
       report_type: 'consolidated',
     };
