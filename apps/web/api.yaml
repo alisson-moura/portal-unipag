@@ -871,6 +871,74 @@ paths:
       summary: Recebimentos do vendedor no estabelecimento e periodo informados
       tags:
         - Relatorios
+  /api/relatorios/transacoes:
+    get:
+      operationId: RelatoriosController_transacoes
+      parameters:
+        - name: start_date
+          required: true
+          in: query
+          description: 'A data de início do período (formato: YYYY-MM-DD)'
+          schema:
+            example: '2025-01-01'
+            type: string
+        - name: finish_date
+          required: true
+          in: query
+          description: 'A data final do período (formato: YYYY-MM-DD)'
+          schema:
+            example: '2025-01-31'
+            type: string
+        - name: page
+          required: true
+          in: query
+          description: Pagina do relatório
+          schema:
+            example: 1
+            type: number
+        - name: mid
+          required: false
+          in: query
+          description: ID do estabelecimento
+          schema:
+            example: 1
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponseDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      security:
+        - bearer: []
+      summary: Relatório de vendas e transações
+      tags:
+        - Relatorios
   /api/estabelecimentos:
     get:
       operationId: EstabelecimentosController_findAll
@@ -1495,3 +1563,346 @@ components:
       required:
         - totais
         - recebimentos
+    StatusCounter:
+      type: object
+      properties:
+        valor:
+          type: number
+          description: Valor monetário total para este status.
+          example: 1500
+        quantidade:
+          type: number
+          description: Quantidade total de transações para este status.
+          example: 10
+      required:
+        - valor
+        - quantidade
+    Contador:
+      type: object
+      properties:
+        aprovadas:
+          description: Contador de transações aprovadas.
+          allOf:
+            - $ref: '#/components/schemas/StatusCounter'
+        pendentes:
+          description: Contador de transações pendentes.
+          allOf:
+            - $ref: '#/components/schemas/StatusCounter'
+        negadas:
+          description: Contador de transações negadas.
+          allOf:
+            - $ref: '#/components/schemas/StatusCounter'
+        desfeitas:
+          description: Contador de transações desfeitas.
+          allOf:
+            - $ref: '#/components/schemas/StatusCounter'
+        devolvidas:
+          description: Contador de transações devolvidas.
+          allOf:
+            - $ref: '#/components/schemas/StatusCounter'
+      required:
+        - aprovadas
+        - pendentes
+        - negadas
+        - desfeitas
+        - devolvidas
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 123456
+        status:
+          type: string
+          description: Status da transação.
+          example: approved
+        refuse_reason:
+          type: string
+          description: Motivo da recusa, se aplicável.
+          example: insufficient_funds
+        acquirer_response_code:
+          type: string
+          description: Código de resposta do adquirente.
+          example: '00'
+        acquirer_name:
+          type: string
+          description: Nome do adquirente.
+          example: Cielo
+        acquirer_id:
+          type: string
+          description: ID do adquirente.
+          example: '100'
+        authorization_code:
+          type: string
+          description: Código de autorização da transação.
+          example: '123456'
+        tef_nsu:
+          type: string
+          description: NSU da transação TEF.
+          example: '987654321'
+        uuid:
+          type: string
+          description: Identificador único universal da transação.
+          example: a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8
+        nsu:
+          type: string
+          description: Número Sequencial Único (NSU).
+          example: '123456789'
+        amount:
+          type: string
+          description: Valor da transação.
+          example: '150.00'
+        amount_operation:
+          type: object
+          description: Valor da operação (tipo variado).
+          example: null
+        fee_operation:
+          type: string
+          description: Taxa da operação.
+          example: '3.50'
+        custo_adquirente:
+          type: number
+          description: Custo do adquirente.
+          example: 1.25
+        custo_mdr:
+          type: string
+          description: Custo MDR (Merchant Discount Rate).
+          example: '4.50'
+        valor_interchange:
+          type: number
+          description: Valor da taxa de intercâmbio.
+          example: 0.75
+        valor_taxa_administracao:
+          type: number
+          description: Valor da taxa de administração.
+          example: 0.5
+        refunded_amount:
+          type: string
+          description: Valor devolvido.
+          example: '0.00'
+        installments:
+          type: number
+          description: Número de parcelas.
+          example: 1
+        merchant_id:
+          type: number
+          description: ID do estabelecimento.
+          example: 9876
+        merchant_name:
+          type: string
+          description: Nome do estabelecimento.
+          example: Minha Loja LTDA
+        merchant_document_number:
+          type: string
+          description: CNPJ/CPF do estabelecimento.
+          example: 12.345.678/0001-99
+        card_holder_name:
+          type: string
+          description: Nome do portador do cartão.
+          example: JOAO DA SILVA
+        card_first_digits:
+          type: string
+          description: Primeiros dígitos do cartão.
+          example: '411111'
+        card_last_digits:
+          type: string
+          description: Últimos dígitos do cartão.
+          example: '1111'
+        card_brand:
+          type: string
+          description: Bandeira do cartão.
+          example: Visa
+        card_pin_mode:
+          type: number
+          description: Modo de inserção do cartão (PIN).
+          example: 1
+        payment_method:
+          type: string
+          description: Método de pagamento.
+          example: credit_card
+        capture_method:
+          type: string
+          description: Método de captura.
+          example: emv
+        capture_partner:
+          type: string
+          description: Parceiro de captura.
+          example: PartnerX
+        device_serial_number:
+          type: string
+          description: Número de série do dispositivo.
+          example: SN123456789
+        simcard_provider:
+          type: object
+          description: Provedor do SIM card.
+          example: null
+        simcard_serial_number:
+          type: string
+          description: Número de série do SIM card.
+          example: SIM987654321
+        boleto_valor:
+          type: object
+          description: Valor do boleto.
+          example: null
+        codigo_barras:
+          type: object
+          description: Código de barras do boleto.
+          example: null
+        ecommerce:
+          type: number
+          description: Indica se é uma transação de e-commerce (1 para sim, 0 para não).
+          example: 0
+        conta_adquirente:
+          type: object
+          description: Conta do adquirente.
+          example: null
+        mdr:
+          type: number
+          description: Taxa MDR (Merchant Discount Rate) aplicada.
+          example: 2.99
+        anticipation_fee:
+          type: number
+          description: Taxa de antecipação.
+          example: 1.99
+        valor_liquido:
+          type: number
+          description: Valor líquido a ser recebido pelo estabelecimento.
+          example: 145.51
+        resolucao_captura:
+          type: number
+          description: Resolução da captura.
+          example: 0
+        resolucao_adquirente:
+          type: number
+          description: Resolução do adquirente.
+          example: 0
+        start_date:
+          type: string
+          description: Data de início da transação.
+          example: '2025-07-29T10:00:00.000Z'
+          format: date-time
+        finish_date:
+          type: string
+          description: Data de finalização da transação.
+          example: '2025-07-29T10:00:05.000Z'
+          format: date-time
+        payment_date:
+          type: string
+          description: Data de pagamento/liquidação.
+          example: '2025-08-28T00:00:00.000Z'
+          format: date-time
+        created_at:
+          type: string
+          description: Data de criação do registro.
+          example: '2025-07-29T10:00:05.000Z'
+          format: date-time
+        updated_at:
+          type: string
+          description: Data da última atualização do registro.
+          example: '2025-07-29T10:00:05.000Z'
+          format: date-time
+        original_merchants_id:
+          type: number
+          description: ID original do estabelecimento.
+          example: 9876
+        original_document_number:
+          type: string
+          description: Documento original do estabelecimento.
+          example: 12.345.678/0001-99
+        original_merchants_name:
+          type: string
+          description: Nome original do estabelecimento.
+          example: Minha Loja LTDA
+      required:
+        - id
+        - status
+        - acquirer_response_code
+        - acquirer_name
+        - acquirer_id
+        - tef_nsu
+        - uuid
+        - nsu
+        - amount
+        - amount_operation
+        - custo_adquirente
+        - custo_mdr
+        - valor_interchange
+        - valor_taxa_administracao
+        - refunded_amount
+        - installments
+        - merchant_id
+        - merchant_name
+        - merchant_document_number
+        - card_brand
+        - card_pin_mode
+        - payment_method
+        - capture_method
+        - capture_partner
+        - device_serial_number
+        - simcard_provider
+        - boleto_valor
+        - codigo_barras
+        - ecommerce
+        - conta_adquirente
+        - mdr
+        - anticipation_fee
+        - valor_liquido
+        - resolucao_captura
+        - resolucao_adquirente
+        - start_date
+        - finish_date
+        - payment_date
+        - created_at
+        - updated_at
+        - original_merchants_id
+        - original_document_number
+        - original_merchants_name
+    PaginatedTransactions:
+      type: object
+      properties:
+        total:
+          type: number
+          description: Número total de itens.
+          example: 153
+        perPage:
+          type: number
+          description: Número de itens por página.
+          example: 15
+        page:
+          type: number
+          description: Número da página atual.
+          example: 1
+        lastPage:
+          type: number
+          description: Número da última página.
+          example: 11
+        data:
+          description: Lista de transações da página atual.
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+      required:
+        - total
+        - perPage
+        - page
+        - lastPage
+        - data
+    TransactionResponseDto:
+      type: object
+      properties:
+        mensagem:
+          type: string
+          description: Mensagem de status da resposta.
+          example: Consulta realizada com sucesso.
+        contador:
+          description: Objeto contendo os contadores de transações por status.
+          allOf:
+            - $ref: '#/components/schemas/Contador'
+        transacoes:
+          description: Objeto com os dados paginados das transações.
+          allOf:
+            - $ref: '#/components/schemas/PaginatedTransactions'
+      required:
+        - mensagem
+        - contador
+        - transacoes

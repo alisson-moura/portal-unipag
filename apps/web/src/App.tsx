@@ -10,6 +10,7 @@ import { EstabelecimentoRecebiveisPage } from "./pages/admin/financeiro/estabele
 import { LoginPage } from "./pages/auth/login";
 import { DashboardPage } from "./pages/admin/index";
 import AdministradoresPage from "./pages/admin/administradores/page";
+import { RelatorioTransacoes } from "./pages/admin/relatorios/transacoes/page";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="vendedores" element={<VendedoresPage />} />
           <Route path="administradores" element={<AdministradoresPage />} />
           <Route path="estabelecimentos" element={<EstabelecimentosPage />} />
+          <Route path="relatorios/transacoes" element={<RelatorioTransacoes />}/>
         </Route>
       </Routes>
       <Toaster />

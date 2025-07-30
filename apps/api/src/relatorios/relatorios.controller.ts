@@ -11,6 +11,10 @@ import { PeriodQueryDto } from './dto/period-query';
 import { VendedorRecebimentosDto } from './dto/vendedor-recebimentos.dto';
 import { EstabelecimentoRecebimentosDto } from './dto/estabelecimento-recebimentos.dto';
 import { RankingVendedoresDto } from './dto/ranking-vendedores.dto';
+import {
+  TransactionQueryDto,
+  TransactionResponseDto,
+} from 'src/ceopag/dto/transacoes.dto';
 
 @ApiBearerAuth()
 @Controller('relatorios')
@@ -81,5 +85,16 @@ export class RelatoriosController {
     @Query() query: PeriodQueryDto,
   ) {
     return this.relatoriosService.recebimentosEstabelecimento(id, query);
+  }
+
+  @ApiOperation({
+    summary: 'Relatório de vendas e transações',
+  })
+  @ApiOkResponse({ type: TransactionResponseDto })
+  @Get('/transacoes')
+  transacoes(
+    @Query() query: TransactionQueryDto,
+  ): Promise<TransactionResponseDto> {
+    return this.relatoriosService.getConsolidatedTransactions(query);
   }
 }

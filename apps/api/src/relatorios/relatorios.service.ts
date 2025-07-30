@@ -1,9 +1,20 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PeriodQueryDto } from './dto/period-query';
-import { ApiCeoPagService } from 'src/ceopag/api.service';
+import { AccountIdentifier, ApiCeoPagService } from 'src/ceopag/api.service';
 import { VendedorRecebimentosDto } from './dto/vendedor-recebimentos.dto';
 import { EstabelecimentoRecebimentosDto } from './dto/estabelecimento-recebimentos.dto';
+import {
+  Contador,
+  PaginatedTransactions,
+  TransactionQueryDto,
+  TransactionResponseDto,
+} from 'src/ceopag/dto/transacoes.dto';
 
 @Injectable()
 export class RelatoriosService {
@@ -193,5 +204,92 @@ export class RelatoriosService {
     );
 
     return recebimentosPorVendedor;
+  }
+
+  /**
+   * Gera um relatório de transações consolidado de múltiplas contas independentes.
+   */
+  async getConsolidatedTransactions(
+    query: TransactionQueryDto,
+  ): Promise<TransactionResponseDto> {
+    const accountIdentifiers = ['ONE', 'TWO'];
+    const maxPerPagePerSource = 10;
+
+    try {
+      // 1. Pede a MESMA PÁGINA para todas as fontes, em paralelo.
+      const responses = await Promise.all(
+        accountIdentifiers.map((account: AccountIdentifier) =>
+          this.ceopagService.transacoes(account, query),
+        ),
+      );
+
+      const [firstBase, secondBase] = responses;
+
+      // 2. Mescla contadores e dados totais globais.
+      const mergedCounters = this.mergeCounters(
+        firstBase.contador,
+        secondBase.contador,
+      );
+      const totalItems =
+        firstBase.transacoes.total + secondBase.transacoes.total;
+
+      // 3. Concatena e ordena os dados recebidos APENAS para a página atual.
+      const combinedDataForThisPage = [
+        ...firstBase.transacoes.data,
+        ...secondBase.transacoes.data,
+      ].sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      );
+
+      // 4. A `lastPage` da nossa API é determinada pela fonte que tem mais páginas.
+      const lastPage = Math.max(
+        firstBase.transacoes.lastPage,
+        secondBase.transacoes.lastPage,
+      );
+
+      // 5. O `perPage` representa o NÚMERO MÁXIMO de itens que uma página pode ter.
+      const maxPerPage = maxPerPagePerSource * accountIdentifiers.length; // 10 * 2 = 20
+
+      const mergedPaginatedTransactions: PaginatedTransactions = {
+        total: totalItems,
+        perPage: maxPerPage, // Informa o MÁXIMO possível por página (100)
+        page: query.page,
+        lastPage: lastPage, // Usa a maior lastPage das fontes
+        data: combinedDataForThisPage,
+      };
+
+      const finalResponse = new TransactionResponseDto();
+      finalResponse.mensagem = 'Consulta realizada com sucesso.';
+      finalResponse.contador = mergedCounters;
+      finalResponse.transacoes = mergedPaginatedTransactions;
+
+      return finalResponse;
+    } catch (error) {
+      console.error('Falha ao gerar relatório consolidado:', error);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Ocorreu um erro ao consolidar os relatórios das contas.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  /**
+   * Mescla dois objetos Contador, somando seus valores.
+   * @private
+   */
+  private mergeCounters(c1: Contador, c2: Contador): Contador {
+    const merged = new Contador();
+    // Itera sobre as chaves do objeto Contador para evitar repetição
+    (Object.keys(c1) as Array<keyof Contador>).forEach((key) => {
+      merged[key] = {
+        quantidade: (c1[key]?.quantidade ?? 0) + (c2[key]?.quantidade ?? 0),
+        valor: (c1[key]?.valor ?? 0) + (c2[key]?.valor ?? 0),
+      };
+    });
+    return merged;
   }
 }

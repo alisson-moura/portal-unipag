@@ -14,8 +14,12 @@ import {
   RecebimentosCeoPagDto,
 } from './dto/recebimentos.dto';
 import { LoginResponseDto } from './dto/login.dto';
+import {
+  TransactionQueryDto,
+  TransactionResponseDto,
+} from './dto/transacoes.dto';
 
-type AccountIdentifier = 'ONE' | 'TWO';
+export type AccountIdentifier = 'ONE' | 'TWO';
 
 @Injectable()
 export class ApiCeoPagService {
@@ -205,6 +209,49 @@ export class ApiCeoPagService {
           .get<RecebimentosCeoPagDto>(url, {
             headers,
             params: queryParams,
+          })
+          .pipe(
+            catchError((error: AxiosError) => {
+              console.error(error.response?.data);
+              throw new HttpException(
+                error.message,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+              );
+            }),
+          ),
+      );
+      return data;
+    } catch (error) {
+      console.error('Falha ao buscar recebíveis liquidados:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * @description relatório da MovingPay de vendas/transações
+   */
+  async transacoes(
+    account: AccountIdentifier,
+    query: TransactionQueryDto,
+  ): Promise<TransactionResponseDto> {
+    const url = `${this.BASE_URL}/${this.PREFIX}/${this.VERSION_API}/transacoes`;
+    const auth = await this.loginByAccount(account);
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${auth.access_token}`,
+      Customer: auth.customers_id,
+      Vendor: auth.vendor_id,
+    };
+
+    try {
+      const { data } = await firstValueFrom(
+        this.httpService
+          .get<TransactionResponseDto>(url, {
+            headers,
+            params: {
+              ...query,
+              limit: 10,
+            },
           })
           .pipe(
             catchError((error: AxiosError) => {

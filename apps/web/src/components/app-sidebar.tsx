@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Users, Store, CreditCard, Wallet, User, ShieldUser } from "lucide-react"
+import { Home, Users, Store, CreditCard, Wallet, User, ShieldUser, LayoutDashboard,  DollarSign } from "lucide-react"
 import {
   Sidebar,
   SidebarContent,
@@ -40,7 +40,14 @@ export function AppSidebar() {
         { title: "Administradores", url: "/admin/administradores", icon: ShieldUser }
       ]
     })
+
+    navItems.push({
+      title: "Relatórios", icon: LayoutDashboard, items: [
+        { title: "Vendas/Transações", url: "/admin/relatorios/transacoes", icon: DollarSign },
+      ]
+    })
   }
+
 
   return (
     <Sidebar>
