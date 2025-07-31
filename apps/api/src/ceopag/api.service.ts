@@ -18,6 +18,10 @@ import {
   TransactionQueryDto,
   TransactionResponseDto,
 } from './dto/transacoes.dto';
+import { PeriodQueryDto } from 'src/relatorios/dto/period-query';
+import { ResumoTransacoesDto } from './dto/resumo-transacoes.dto';
+import { ResumoBandeirasDto } from './dto/resumo-bandeiras';
+import { ResumoTransacoesPeriodoDto } from './dto/resumo-transacoes-periodo';
 
 export type AccountIdentifier = 'ONE' | 'TWO';
 
@@ -266,6 +270,126 @@ export class ApiCeoPagService {
       return data;
     } catch (error) {
       console.error('Falha ao buscar recebíveis liquidados:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * @description dashboard da movingpay resumo transacoes
+   */
+  async resumoTransacoes(
+    account: AccountIdentifier,
+    query: PeriodQueryDto,
+  ): Promise<ResumoTransacoesDto> {
+    const url = `${this.BASE_URL}/${this.PREFIX}/${this.VERSION_API}/transacoes/resumo`;
+    const auth = await this.loginByAccount(account);
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${auth.access_token}`,
+      Customer: auth.customers_id,
+      Vendor: auth.vendor_id,
+    };
+
+    try {
+      const { data } = await firstValueFrom(
+        this.httpService
+          .get<ResumoTransacoesDto>(url, {
+            headers,
+            params: query,
+          })
+          .pipe(
+            catchError((error: AxiosError) => {
+              console.error(error.response?.data);
+              throw new HttpException(
+                error.message,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+              );
+            }),
+          ),
+      );
+      return data;
+    } catch (error) {
+      console.error('Falha ao buscar resumo transações:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * @description dashboard da movingpay resumo bandeiras
+   */
+  async resumoBandeiras(
+    account: AccountIdentifier,
+    query: PeriodQueryDto,
+  ): Promise<ResumoBandeirasDto> {
+    const url = `${this.BASE_URL}/${this.PREFIX}/${this.VERSION_API}/transacoes/resumo/bandeiras`;
+    const auth = await this.loginByAccount(account);
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${auth.access_token}`,
+      Customer: auth.customers_id,
+      Vendor: auth.vendor_id,
+    };
+
+    try {
+      const { data } = await firstValueFrom(
+        this.httpService
+          .get<ResumoBandeirasDto>(url, {
+            headers,
+            params: query,
+          })
+          .pipe(
+            catchError((error: AxiosError) => {
+              console.error(error.response?.data);
+              throw new HttpException(
+                error.message,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+              );
+            }),
+          ),
+      );
+      return data;
+    } catch (error) {
+      console.error('Falha ao buscar resumo bandeiras:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * @description dashboard da movingpay resumo status transacoes
+   */
+  async resumoStatusTransacoes(
+    account: AccountIdentifier,
+    query: PeriodQueryDto,
+  ): Promise<ResumoTransacoesPeriodoDto> {
+    const url = `${this.BASE_URL}/${this.PREFIX}/${this.VERSION_API}/transacoes/resumo/periodo`;
+    const auth = await this.loginByAccount(account);
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${auth.access_token}`,
+      Customer: auth.customers_id,
+      Vendor: auth.vendor_id,
+    };
+
+    try {
+      const { data } = await firstValueFrom(
+        this.httpService
+          .get<ResumoTransacoesPeriodoDto>(url, {
+            headers,
+            params: query,
+          })
+          .pipe(
+            catchError((error: AxiosError) => {
+              console.error(error.response?.data);
+              throw new HttpException(
+                error.message,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+              );
+            }),
+          ),
+      );
+      return data;
+    } catch (error) {
+      console.error('Falha ao buscar resumo bandeiras:', error);
       throw error;
     }
   }

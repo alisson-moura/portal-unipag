@@ -1,6 +1,6 @@
 import { useAuth } from "../auth/auth-provider";
-import { AdminDashboardPage } from "./dashboard/admin";
 import { VendedorDashboardPage } from "./dashboard/vendedor";
+import { AdminDashboard } from "./relatorios/admin/page";
 
 export function DashboardPage() {
   const { user } = useAuth()
@@ -9,7 +9,7 @@ export function DashboardPage() {
     return <div>Carregando...</div>
 
   if (user.role == "ADMINISTRADOR")
-    return <AdminDashboardPage />
+    return <AdminDashboard />
 
   return <VendedorDashboardPage id={user.id} />
 }

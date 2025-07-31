@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { PeriodQueryDto } from 'src/relatorios/dto/period-query';
 
 export class StatusCounter {
   @ApiProperty({
@@ -341,21 +342,7 @@ export class TransactionResponseDto {
   transacoes: PaginatedTransactions;
 }
 
-export class TransactionQueryDto {
-  @ApiProperty({
-    description: 'A data de início do período (formato: YYYY-MM-DD)',
-    example: '2025-01-01',
-    required: true,
-  })
-  start_date: string;
-
-  @ApiProperty({
-    description: 'A data final do período (formato: YYYY-MM-DD)',
-    example: '2025-01-31',
-    required: true,
-  })
-  finish_date: string;
-
+export class TransactionQueryDto extends PeriodQueryDto {
   @ApiProperty({
     description: 'Pagina do relatório',
     example: 1,

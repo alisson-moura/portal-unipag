@@ -939,6 +939,168 @@ paths:
       summary: Relatório de vendas e transações
       tags:
         - Relatorios
+  /api/relatorios/transacoes/resumo:
+    get:
+      operationId: RelatoriosController_resumoTransacoes
+      parameters:
+        - name: start_date
+          required: true
+          in: query
+          description: 'A data de início do período (formato: YYYY-MM-DD)'
+          schema:
+            example: '2025-01-01'
+            type: string
+        - name: finish_date
+          required: true
+          in: query
+          description: 'A data final do período (formato: YYYY-MM-DD)'
+          schema:
+            example: '2025-01-31'
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumoTransacoesDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      security:
+        - bearer: []
+      summary: Resumo das transações no periodo informado
+      tags:
+        - Relatorios
+  /api/relatorios/transacoes/resumo/bandeiras:
+    get:
+      operationId: RelatoriosController_resumoBandeiras
+      parameters:
+        - name: start_date
+          required: true
+          in: query
+          description: 'A data de início do período (formato: YYYY-MM-DD)'
+          schema:
+            example: '2025-01-01'
+            type: string
+        - name: finish_date
+          required: true
+          in: query
+          description: 'A data final do período (formato: YYYY-MM-DD)'
+          schema:
+            example: '2025-01-31'
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumoBandeirasDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      security:
+        - bearer: []
+      summary: Resumo das transações por bandeira no periodo informado
+      tags:
+        - Relatorios
+  /api/relatorios/transacoes/resumo/periodo:
+    get:
+      operationId: RelatoriosController_resumoPeriodo
+      parameters:
+        - name: start_date
+          required: true
+          in: query
+          description: 'A data de início do período (formato: YYYY-MM-DD)'
+          schema:
+            example: '2025-01-01'
+            type: string
+        - name: finish_date
+          required: true
+          in: query
+          description: 'A data final do período (formato: YYYY-MM-DD)'
+          schema:
+            example: '2025-01-31'
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumoTransacoesPeriodoDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      security:
+        - bearer: []
+      summary: Resumo das transações por status no periodo informado
+      tags:
+        - Relatorios
   /api/estabelecimentos:
     get:
       operationId: EstabelecimentosController_findAll
@@ -1906,3 +2068,128 @@ components:
         - mensagem
         - contador
         - transacoes
+    DetalheFaturamentoDto:
+      type: object
+      properties:
+        valor:
+          type: number
+          description: O valor monetário total, representado em centavos.
+          example: 5243115
+        qtde:
+          type: number
+          description: A quantidade de transações correspondentes.
+          example: 669
+      required:
+        - valor
+        - qtde
+    DadosFaturamentoDto:
+      type: object
+      properties:
+        total:
+          description: Dados consolidados do faturamento total.
+          allOf:
+            - $ref: '#/components/schemas/DetalheFaturamentoDto'
+        debito:
+          description: Dados referentes às transações de débito.
+          allOf:
+            - $ref: '#/components/schemas/DetalheFaturamentoDto'
+        credito:
+          description: Dados referentes às transações de crédito à vista.
+          allOf:
+            - $ref: '#/components/schemas/DetalheFaturamentoDto'
+        parcelado:
+          description: Dados referentes às transações de crédito parcelado.
+          allOf:
+            - $ref: '#/components/schemas/DetalheFaturamentoDto'
+      required:
+        - total
+        - debito
+        - credito
+        - parcelado
+    ResumoTransacoesDto:
+      type: object
+      properties:
+        Faturamento:
+          description: O objeto principal que contém o resumo do faturamento.
+          allOf:
+            - $ref: '#/components/schemas/DadosFaturamentoDto'
+      required:
+        - Faturamento
+    BandeiraItemDto:
+      type: object
+      properties:
+        Bandeira:
+          type: string
+          description: O nome da bandeira do cartão ou método de pagamento.
+          example: MASTERCARD
+        QtdeVendas:
+          type: number
+          description: A quantidade total de vendas para essa bandeira.
+          example: 2147
+      required:
+        - Bandeira
+        - QtdeVendas
+    ResumoBandeirasDto:
+      type: object
+      properties:
+        object:
+          type: string
+          description: Identificador do tipo de objeto retornado.
+          example: Bandeiras
+        items:
+          description: Uma lista contendo o resumo de vendas por bandeira.
+          type: array
+          items:
+            $ref: '#/components/schemas/BandeiraItemDto'
+      required:
+        - object
+        - items
+    TransacaoDiariaDto:
+      type: object
+      properties:
+        Data:
+          type: string
+          description: A data a que o resumo se refere, no formato AAAA-MM-DD.
+          example: '2025-07-31'
+        Aprovadas:
+          type: number
+          description: A quantidade de transações aprovadas neste dia.
+          example: 1279745
+        Negadas:
+          type: number
+          description: A quantidade de transações negadas neste dia.
+          example: 33672
+        Pendentes:
+          type: number
+          description: A quantidade de transações com status pendente neste dia.
+          example: 0
+      required:
+        - Data
+        - Aprovadas
+        - Negadas
+        - Pendentes
+    ResumoTransacoesPeriodoDto:
+      type: object
+      properties:
+        object:
+          type: string
+          description: Identificador do tipo de objeto retornado.
+          example: Bandeiras
+        percentualAprovadas:
+          type: string
+          description: O percentual total de transações aprovadas no período.
+          example: '96.36'
+        percentualNegadas:
+          type: string
+          description: O percentual total de transações negadas no período.
+          example: '3.64'
+        items:
+          description: Uma lista contendo o resumo diário de transações.
+          type: array
+          items:
+            $ref: '#/components/schemas/TransacaoDiariaDto'
+      required:
+        - object
+        - percentualAprovadas
+        - percentualNegadas
+        - items

@@ -18,7 +18,7 @@ import {
 } from "@/gen/hooks/RelatoriosHooks";
 import { formatCurrency } from "@/lib/format";
 import { Store, Users, Wallet } from "lucide-react";
-import { MetricCard } from "../financeiro/metric-card";
+import { MetricCard } from "../../financeiro/metric-card";
 import { RankingVendedoresChart } from "@/components/ranking-vendedores-chart";
 import { format } from "date-fns";
 

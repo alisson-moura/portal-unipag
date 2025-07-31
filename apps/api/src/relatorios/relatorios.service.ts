@@ -15,6 +15,18 @@ import {
   TransactionQueryDto,
   TransactionResponseDto,
 } from 'src/ceopag/dto/transacoes.dto';
+import {
+  DadosFaturamentoDto,
+  ResumoTransacoesDto,
+} from 'src/ceopag/dto/resumo-transacoes.dto';
+import {
+  BandeiraItemDto,
+  ResumoBandeirasDto,
+} from 'src/ceopag/dto/resumo-bandeiras';
+import {
+  ResumoTransacoesPeriodoDto,
+  TransacaoDiariaDto,
+} from 'src/ceopag/dto/resumo-transacoes-periodo';
 
 @Injectable()
 export class RelatoriosService {
@@ -291,5 +303,205 @@ export class RelatoriosService {
       };
     });
     return merged;
+  }
+
+  async resumoTransacoesConsolidado(
+    query: PeriodQueryDto,
+  ): Promise<ResumoTransacoesDto> {
+    const accountIdentifiers: AccountIdentifier[] = ['ONE', 'TWO'];
+
+    try {
+      // 1. Manter os resultados em um array para facilitar a iteração.
+      const allResults = await Promise.all(
+        accountIdentifiers.map((account: AccountIdentifier) =>
+          this.ceopagService.resumoTransacoes(account, query),
+        ),
+      );
+
+      // 2. Definir o estado inicial para o acumulador. Isso resolve o problema de inicialização.
+      const initialFaturamento: DadosFaturamentoDto = {
+        total: { qtde: 0, valor: 0 },
+        debito: { qtde: 0, valor: 0 },
+        credito: { qtde: 0, valor: 0 },
+        parcelado: { qtde: 0, valor: 0 },
+      };
+
+      // 3. Usar reduce para somar os faturamentos de todos os resultados de forma limpa.
+      const faturamentoConsolidado = allResults.reduce(
+        (acumulador, resultadoAtual) => {
+          // Itera sobre as chaves do faturamento ('total', 'debito', etc.)
+          (Object.keys(acumulador) as Array<keyof DadosFaturamentoDto>).forEach(
+            (key) => {
+              // Soma os valores do resultado atual no acumulador
+              acumulador[key].qtde += resultadoAtual.Faturamento[key].qtde;
+              acumulador[key].valor += resultadoAtual.Faturamento[key].valor;
+            },
+          );
+          return acumulador;
+        },
+        initialFaturamento, // Começa a soma a partir do objeto com valores zerados
+      );
+
+      // 4. Construir o objeto de resposta final.
+      const resumoFinal = new ResumoTransacoesDto();
+      resumoFinal.Faturamento = faturamentoConsolidado;
+
+      return resumoFinal;
+    } catch (error) {
+      console.error('Falha ao gerar relatório consolidado:', error);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Ocorreu um erro ao consolidar os relatórios das contas.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async resumoTransacoesPorBandeiraConsolidado(
+    query: PeriodQueryDto,
+  ): Promise<ResumoBandeirasDto> {
+    const accountIdentifiers = ['ONE', 'TWO'];
+    try {
+      const [firstAccount, secondAccount] = await Promise.all(
+        accountIdentifiers.map((account: AccountIdentifier) =>
+          this.ceopagService.resumoBandeiras(account, query),
+        ),
+      );
+
+      const consolidadoMap = new Map<string, number>();
+      const todosOsItens = [
+        ...(firstAccount.items || []),
+        ...(secondAccount.items || []),
+      ];
+
+      for (const item of todosOsItens) {
+        const { Bandeira, QtdeVendas } = item;
+        const vendasAtuais = consolidadoMap.get(Bandeira) || 0;
+        consolidadoMap.set(Bandeira, vendasAtuais + QtdeVendas);
+      }
+
+      const itensConsolidados: BandeiraItemDto[] = [];
+      for (const [bandeira, qtdeVendas] of consolidadoMap.entries()) {
+        const newItem = new BandeiraItemDto(); // Usando a classe para garantir a tipagem
+        newItem.Bandeira = bandeira;
+        newItem.QtdeVendas = qtdeVendas;
+        itensConsolidados.push(newItem);
+      }
+
+      const resumoFinal = new ResumoBandeirasDto();
+      resumoFinal.object = 'Bandeiras';
+      resumoFinal.items = itensConsolidados.sort(
+        (a, b) => b.QtdeVendas - a.QtdeVendas,
+      );
+
+      return resumoFinal;
+    } catch (error) {
+      console.error('Falha ao gerar relatório consolidado:', error);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Ocorreu um erro ao consolidar os relatórios das contas.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async resumoTransacoesDiariasConsolidado(
+    query: PeriodQueryDto,
+  ): Promise<ResumoTransacoesPeriodoDto> {
+    const accountIdentifiers: AccountIdentifier[] = ['ONE', 'TWO'];
+    try {
+      const [firstAccountResult, secondAccountResult] = await Promise.all(
+        accountIdentifiers.map((account: AccountIdentifier) =>
+          this.ceopagService.resumoStatusTransacoes(account, query),
+        ),
+      );
+
+      const consolidadoMap = new Map<
+        string,
+        { Aprovadas: number; Negadas: number; Pendentes: number }
+      >();
+
+      const todosOsItens = [
+        ...(firstAccountResult.items || []),
+        ...(secondAccountResult.items || []),
+      ];
+
+      // 3. Itera sobre todos os itens para somar os valores por data
+      for (const item of todosOsItens) {
+        const { Data, Aprovadas, Negadas, Pendentes } = item;
+        const diaAtual = consolidadoMap.get(Data);
+
+        if (diaAtual) {
+          diaAtual.Aprovadas += Aprovadas;
+          diaAtual.Negadas += Negadas;
+          diaAtual.Pendentes += Pendentes;
+        } else {
+          consolidadoMap.set(Data, { Aprovadas, Negadas, Pendentes });
+        }
+      }
+
+      // Converte o Map de volta para um array de TransacaoDiariaDto
+      const itensConsolidados: TransacaoDiariaDto[] = [];
+      for (const [data, valores] of consolidadoMap.entries()) {
+        const newItem = new TransacaoDiariaDto();
+        newItem.Data = data;
+        newItem.Aprovadas = valores.Aprovadas;
+        newItem.Negadas = valores.Negadas;
+        newItem.Pendentes = valores.Pendentes;
+        itensConsolidados.push(newItem);
+      }
+      // Ordena o resultado final por data
+      itensConsolidados.sort(
+        (a, b) => new Date(a.Data).getTime() - new Date(b.Data).getTime(),
+      );
+
+      //  Recalcula os totais e percentuais
+      let totalAprovadas = 0;
+      let totalNegadas = 0;
+      for (const item of itensConsolidados) {
+        totalAprovadas += item.Aprovadas;
+        totalNegadas += item.Negadas;
+      }
+
+      const totalTransacoes = totalAprovadas + totalNegadas;
+      let percentualAprovadasFinal = '0.00';
+      let percentualNegadasFinal = '0.00';
+
+      if (totalTransacoes > 0) {
+        percentualAprovadasFinal = (
+          (totalAprovadas / totalTransacoes) *
+          100
+        ).toFixed(2);
+        percentualNegadasFinal = (
+          (totalNegadas / totalTransacoes) *
+          100
+        ).toFixed(2);
+      }
+
+      // Monta o objeto final de retorno
+      const resumoFinal = new ResumoTransacoesPeriodoDto();
+      resumoFinal.object = 'Bandeiras';
+      resumoFinal.percentualAprovadas = percentualAprovadasFinal;
+      resumoFinal.percentualNegadas = percentualNegadasFinal;
+      resumoFinal.items = itensConsolidados;
+
+      return resumoFinal;
+    } catch (error) {
+      console.error(
+        'Falha ao gerar relatório de transações consolidado:',
+        error,
+      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Ocorreu um erro ao consolidar os relatórios de transações das contas.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

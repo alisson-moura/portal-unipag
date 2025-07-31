@@ -15,6 +15,9 @@ import {
   TransactionQueryDto,
   TransactionResponseDto,
 } from 'src/ceopag/dto/transacoes.dto';
+import { ResumoTransacoesDto } from 'src/ceopag/dto/resumo-transacoes.dto';
+import { ResumoBandeirasDto } from 'src/ceopag/dto/resumo-bandeiras';
+import { ResumoTransacoesPeriodoDto } from 'src/ceopag/dto/resumo-transacoes-periodo';
 
 @ApiBearerAuth()
 @Controller('relatorios')
@@ -96,5 +99,36 @@ export class RelatoriosController {
     @Query() query: TransactionQueryDto,
   ): Promise<TransactionResponseDto> {
     return this.relatoriosService.getConsolidatedTransactions(query);
+  }
+
+  @ApiOperation({
+    summary: 'Resumo das transações no periodo informado',
+  })
+  @ApiOkResponse({ type: ResumoTransacoesDto })
+  @Get('/transacoes/resumo')
+  resumoTransacoes(
+    @Query() query: PeriodQueryDto,
+  ): Promise<ResumoTransacoesDto> {
+    return this.relatoriosService.resumoTransacoesConsolidado(query);
+  }
+
+  @ApiOperation({
+    summary: 'Resumo das transações por bandeira no periodo informado',
+  })
+  @ApiOkResponse({ type: ResumoBandeirasDto })
+  @Get('/transacoes/resumo/bandeiras')
+  resumoBandeiras(@Query() query: PeriodQueryDto): Promise<ResumoBandeirasDto> {
+    return this.relatoriosService.resumoTransacoesPorBandeiraConsolidado(query);
+  }
+
+  @ApiOperation({
+    summary: 'Resumo das transações por status no periodo informado',
+  })
+  @ApiOkResponse({ type: ResumoTransacoesPeriodoDto })
+  @Get('/transacoes/resumo/periodo')
+  resumoPeriodo(
+    @Query() query: PeriodQueryDto,
+  ): Promise<ResumoTransacoesPeriodoDto> {
+    return this.relatoriosService.resumoTransacoesDiariasConsolidado(query);
   }
 }
