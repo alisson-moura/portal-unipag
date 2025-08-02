@@ -1,5 +1,16 @@
-import { Link, useLocation } from 'react-router-dom';
-import { Home, Users, Store, CreditCard, Wallet, User, ShieldUser, LayoutDashboard,  DollarSign } from "lucide-react"
+import { Link, useLocation } from "react-router-dom";
+import {
+  Home,
+  Users,
+  Store,
+  CreditCard,
+  Wallet,
+  User,
+  ShieldUser,
+  LayoutDashboard,
+  DollarSign,
+  SlidersVertical,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -14,40 +25,62 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "@/components/ui/sidebar"
-import { NavUser } from './nav-user';
-import { useAuth } from '@/pages/auth/auth-provider';
+} from "@/components/ui/sidebar";
+import { NavUser } from "./nav-user";
+import { useAuth } from "@/pages/auth/auth-provider";
 
 export function AppSidebar() {
-  const { user } = useAuth()
+  const { user } = useAuth();
   const location = useLocation();
 
   const navItems = [
     { title: "Dashboard", url: "/admin", icon: Home },
     {
-      title: "Recebimentos", icon: Wallet, items: [
+      title: "Recebimentos",
+      icon: Wallet,
+      items: [
         { title: "Vendedor", url: "/admin/financeiro/vendedores", icon: User },
-        { title: "Estabelecimento", url: "/admin/financeiro/estabelecimentos", icon: Store }
-      ]
+        {
+          title: "Estabelecimento",
+          url: "/admin/financeiro/estabelecimentos",
+          icon: Store,
+        },
+      ],
     },
     { title: "Estabelecimentos", url: "/admin/estabelecimentos", icon: Store },
-  ]
+  ];
 
   if (user?.role == "ADMINISTRADOR") {
     navItems.splice(2, 0, {
-      title: "Usuários", icon: Users, items: [
+      title: "Usuários",
+      icon: Users,
+      items: [
         { title: "Vendedores", url: "/admin/vendedores", icon: User },
-        { title: "Administradores", url: "/admin/administradores", icon: ShieldUser }
-      ]
-    })
+        {
+          title: "Administradores",
+          url: "/admin/administradores",
+          icon: ShieldUser,
+        },
+      ],
+    });
 
     navItems.push({
-      title: "Relatórios", icon: LayoutDashboard, items: [
-        { title: "Vendas/Transações", url: "/admin/relatorios/transacoes", icon: DollarSign },
-      ]
-    })
+      title: "Relatórios",
+      icon: LayoutDashboard,
+      items: [
+        {
+          title: "Vendas/Transações",
+          url: "/admin/relatorios/transacoes",
+          icon: DollarSign,
+        },
+      ],
+    });
+    navItems.push({
+      title: "Configurações",
+      url: "/admin/configs",
+      icon: SlidersVertical,
+    });
   }
-
 
   return (
     <Sidebar>
@@ -75,23 +108,30 @@ export function AppSidebar() {
             <SidebarMenu>
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton isActive={location.pathname == item.url} asChild>
-                    {item.url ?
+                  <SidebarMenuButton
+                    isActive={location.pathname == item.url}
+                    asChild
+                  >
+                    {item.url ? (
                       <Link to={item.url}>
                         <item.icon />
                         <span>{item.title}</span>
-                      </Link> :
+                      </Link>
+                    ) : (
                       <span>
                         <item.icon />
                         <span>{item.title}</span>
                       </span>
-                    }
+                    )}
                   </SidebarMenuButton>
                   {item.items && item.items.length > 0 && (
                     <SidebarMenuSub>
                       {item.items.map((item) => (
                         <SidebarMenuSubItem key={item.title}>
-                          <SidebarMenuSubButton asChild isActive={location.pathname == item.url}>
+                          <SidebarMenuSubButton
+                            asChild
+                            isActive={location.pathname == item.url}
+                          >
                             <Link to={item.url}>
                               <item.icon />
                               <span>{item.title}</span>
@@ -111,5 +151,5 @@ export function AppSidebar() {
         <NavUser />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

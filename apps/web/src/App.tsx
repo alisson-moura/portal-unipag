@@ -11,6 +11,7 @@ import { LoginPage } from "./pages/auth/login";
 import { DashboardPage } from "./pages/admin/index";
 import AdministradoresPage from "./pages/admin/administradores/page";
 import { RelatorioTransacoes } from "./pages/admin/relatorios/transacoes/page";
+import { ConfigPage } from "./pages/admin/configs/page";
 
 function App() {
   return (
@@ -25,9 +26,10 @@ function App() {
           <Route path="administradores" element={<AdministradoresPage />} />
           <Route path="estabelecimentos" element={<EstabelecimentosPage />} />
           <Route path="relatorios/transacoes" element={<RelatorioTransacoes />}/>
+          <Route path="configs" element={<ConfigPage />}/>
         </Route>
       </Routes>
-      <Toaster />
+      <Toaster richColors />
     </QueryClientProvider>
   )
 }
