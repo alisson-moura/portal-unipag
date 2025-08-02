@@ -12,6 +12,7 @@ import { RelatoriosModule } from './relatorios/relatorios.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { EstabelecimentosModule } from './estabelecimentos/estabelecimentos.module';
 import { LoggerMiddleware } from './config/log-middleware';
+import { ConfiguracoesController } from './config/config.controller';
 
 @Module({
   imports: [
@@ -37,7 +38,7 @@ import { LoggerMiddleware } from './config/log-middleware';
     RelatoriosModule,
     EstabelecimentosModule,
   ],
-  controllers: [],
+  controllers: [ConfiguracoesController],
   providers: [],
 })
 export class AppModule {

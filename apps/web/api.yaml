@@ -1,5 +1,97 @@
 openapi: 3.0.0
 paths:
+  /api/configs/taxas:
+    get:
+      operationId: ConfiguracoesController_getTaxaAdministrativa
+      parameters: []
+      responses:
+        '200':
+          description: Taxa administrativa retornada com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaxaAdministrativaResponseDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      security:
+        - bearer: []
+      summary: Obter a taxa administrativa atual
+      tags:
+        - Configurações
+  /api/configs/taxas/{id}:
+    put:
+      operationId: ConfiguracoesController_putTaxaAdministrativa
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: ID da taxa a ser atualizada
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaxaDto'
+      responses:
+        '200':
+          description: Taxa administrativa atualizada com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaxaAdministrativaResponseDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HttpError'
+      security:
+        - bearer: []
+      summary: Atualizar a taxa administrativa
+      tags:
+        - Configurações
   /api/auth/login:
     post:
       operationId: AuthController_login
@@ -1170,6 +1262,42 @@ components:
       required:
         - statusCode
         - message
+    TaxaAdministrativaDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: a1b2c3d4-e5f6-7890-1234-567890abcdef
+          description: ID único da taxa administrativa.
+        taxa:
+          type: number
+          description: 'Valor da taxa administrativa (ex: 0.0058 para 0.58%).'
+          example: 0.0058
+        atualizado_em:
+          format: date-time
+          type: string
+          description: Data da última atualização.
+          example: '2025-08-02T13:42:32.000Z'
+      required:
+        - id
+        - taxa
+        - atualizado_em
+    TaxaAdministrativaResponseDto:
+      type: object
+      properties:
+        taxa_administrativa:
+          $ref: '#/components/schemas/TaxaAdministrativaDto'
+      required:
+        - taxa_administrativa
+    UpdateTaxaDto:
+      type: object
+      properties:
+        taxa:
+          type: number
+          description: O novo valor da taxa administrativa.
+          example: 0.01
+      required:
+        - taxa
     RequestLoginDto:
       type: object
       properties:
