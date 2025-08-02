@@ -60,3 +60,11 @@ model Indicacao {
   @@unique([estabelecimento_id], map: "indicacoes_estabelecimento_unique")
   @@map("indicacoes")
 }
+
+model TaxaAdministrativa {
+  id            String   @id @default(uuid())
+  taxa          Decimal  @default(0.0058) @db.Decimal(10, 4)
+  atualizado_em DateTime @default(now())
+
+  @@map("taxa_administrativa")
+}
