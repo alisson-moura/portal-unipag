@@ -12,6 +12,7 @@ import { DashboardPage } from "./pages/admin/index";
 import AdministradoresPage from "./pages/admin/administradores/page";
 import { RelatorioTransacoes } from "./pages/admin/relatorios/transacoes/page";
 import { ConfigPage } from "./pages/admin/configs/page";
+import { AdminDashboard } from "./pages/admin/relatorios/admin/page";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="administradores" element={<AdministradoresPage />} />
           <Route path="estabelecimentos" element={<EstabelecimentosPage />} />
           <Route path="relatorios/transacoes" element={<RelatorioTransacoes />}/>
+          <Route path="relatorios/transacoes/resumo" element={<AdminDashboard />}/>
           <Route path="configs" element={<ConfigPage />}/>
         </Route>
       </Routes>

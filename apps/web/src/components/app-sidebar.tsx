@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   DollarSign,
   SlidersVertical,
+  ChartNoAxesCombined,
 } from "lucide-react";
 import {
   Sidebar,
@@ -68,6 +69,11 @@ export function AppSidebar() {
       title: "Relatórios",
       icon: LayoutDashboard,
       items: [
+        {
+          title: "Distribuição",
+          url: "/admin/relatorios/transacoes/resumo",
+          icon: ChartNoAxesCombined,
+        },
         {
           title: "Vendas/Transações",
           url: "/admin/relatorios/transacoes",

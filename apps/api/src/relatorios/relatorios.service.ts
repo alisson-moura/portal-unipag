@@ -28,6 +28,8 @@ import {
   TransacaoDiariaDto,
 } from 'src/ceopag/dto/resumo-transacoes-periodo';
 
+import { Prisma } from '@prisma/client';
+
 @Injectable()
 export class RelatoriosService {
   constructor(
@@ -54,10 +56,29 @@ export class RelatoriosService {
     };
   }
 
+  private calcularMdrVendedor(
+    grossAmount: number,
+    taxaAdministrativa: Prisma.Decimal,
+    taxaComissaoVendedor: number,
+  ): number {
+    const grossAmountDecimal = new Prisma.Decimal(grossAmount);
+    const taxaVendedorDecimal = new Prisma.Decimal(taxaComissaoVendedor).div(
+      100,
+    );
+
+    const mdrUnipag = taxaAdministrativa.mul(grossAmountDecimal);
+    const mdrVendedor = mdrUnipag.mul(taxaVendedorDecimal);
+
+    return mdrVendedor.round().toNumber();
+  }
+
   async recebimentosVendedor(
     id: string,
     query: PeriodQueryDto,
   ): Promise<VendedorRecebimentosDto> {
+    const taxaAdministrativa =
+      await this.database.taxaAdministrativa.findFirstOrThrow();
+
     const indicacoes = await this.database.indicacao.findMany({
       where: {
         usuario_id: id,
@@ -84,8 +105,11 @@ export class RelatoriosService {
           liquido: 0,
         };
 
-      const taxa_comissao = indicacao.taxa_comissao / 100;
-      const mdr = recebimentoCeoPag.totais.mdr * taxa_comissao;
+      const mdr = this.calcularMdrVendedor(
+        recebimentoCeoPag.totais.gross_amount,
+        taxaAdministrativa.taxa,
+        indicacao.taxa_comissao,
+      );
 
       return {
         estabelecimento: indicacao.estabelecimento,
@@ -121,6 +145,9 @@ export class RelatoriosService {
     id: string,
     query: PeriodQueryDto,
   ): Promise<EstabelecimentoRecebimentosDto> {
+    const taxaAdministrativa =
+      await this.database.taxaAdministrativa.findFirstOrThrow();
+
     const estabelecimento =
       await this.database.estabelecimentoCeoPag.findUnique({
         where: { id },
@@ -147,22 +174,33 @@ export class RelatoriosService {
       };
     }
 
-    const taxa_comissao = Number(estabelecimento.indicacao.taxa_comissao) / 100;
     const recebimentos = recebimentoCeoPag.paids.data.map((paid) => ({
       data_recebimento: paid.payment_date,
       tpv: paid.gross_amount,
-      mdr: paid.mdr * taxa_comissao,
+      mdr: this.calcularMdrVendedor(
+        paid.gross_amount,
+        taxaAdministrativa.taxa,
+        estabelecimento.indicacao!.taxa_comissao,
+      ),
       rav: paid.rav,
       liquido: paid.net_amount,
       pagamentos: paid.payables.map((paid) => ({
         ...paid,
-        payables_mdr: paid.payables_mdr * taxa_comissao,
+        payables_mdr: this.calcularMdrVendedor(
+          paid.payables_gross_amount,
+          taxaAdministrativa.taxa,
+          estabelecimento.indicacao!.taxa_comissao,
+        ),
       })),
     }));
     return {
       totais: {
         tpv: recebimentoCeoPag.totais.gross_amount,
-        mdr: recebimentoCeoPag.totais.mdr * taxa_comissao,
+        mdr: this.calcularMdrVendedor(
+          recebimentoCeoPag.totais.gross_amount,
+          taxaAdministrativa.taxa,
+          estabelecimento.indicacao.taxa_comissao,
+        ),
         rav: recebimentoCeoPag.totais.rav,
         liquido: recebimentoCeoPag.totais.net_amount,
       },
