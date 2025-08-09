@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { AtribuirGestorDto } from './dto/atribuir-gestor.dto';
 
 @Injectable()
 export class EstabelecimentosService {
@@ -13,7 +14,26 @@ export class EstabelecimentosService {
       },
       include: {
         indicacao: true,
+        gestor: true,
       },
+    });
+  }
+
+  async atribuirGestor(data: AtribuirGestorDto): Promise<void> {
+    await this.prismaService.estabelecimentoCeoPag.update({
+      where: {
+        id: data.estabelecimentoId,
+      },
+      data: {
+        gestor_id: data.gestorId,
+      },
+    });
+  }
+
+  async removerGestor(estabelecimentoId: string) {
+    await this.prismaService.estabelecimentoCeoPag.update({
+      where: { id: estabelecimentoId },
+      data: { gestor_id: null },
     });
   }
 }

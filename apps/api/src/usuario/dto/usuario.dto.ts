@@ -18,7 +18,7 @@ export class Usuario {
 
   senha: string;
 
-  @ApiProperty({ enum: ['ADMINISTRADOR', 'VENDEDOR'] })
+  @ApiProperty({ enum: ['ADMINISTRADOR', 'VENDEDOR', 'GESTOR'] })
   role: UserRole;
 
   @ApiProperty()

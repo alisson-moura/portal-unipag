@@ -42,13 +42,13 @@ export class UsuarioController {
   @ApiQuery({
     description: 'filtro da role do usuário',
     name: 'role',
-    enum: ['ADMINISTRADOR', 'VENDEDOR'],
+    enum: ['ADMINISTRADOR', 'VENDEDOR', 'GESTOR'],
     required: false,
   })
   @ApiOkResponse({ type: Usuario, isArray: true })
   @Roles('ADMINISTRADOR')
   @Get()
-  all(@Query('role') role?: 'ADMINISTRADOR' | 'VENDEDOR') {
+  all(@Query('role') role?: 'ADMINISTRADOR' | 'VENDEDOR' | 'GESTOR') {
     return this.usuarioService.all({ role });
   }
 
@@ -58,7 +58,7 @@ export class UsuarioController {
     description: 'ID do usuário',
   })
   @ApiOperation({ summary: 'Dados do usuário' })
-  @Roles('ADMINISTRADOR', 'VENDEDOR')
+  @Roles('ADMINISTRADOR', 'VENDEDOR', 'GESTOR')
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usuarioService.findOne(id);
@@ -72,7 +72,7 @@ export class UsuarioController {
   }
 
   @ApiOperation({ summary: 'Redefini a senha do usuário' })
-  @Roles('ADMINISTRADOR', 'VENDEDOR')
+  @Roles('ADMINISTRADOR', 'VENDEDOR', 'GESTOR')
   @Patch(':id/senha')
   redefinirSenha(@Param('id') id: string, @Body() data: RedefinirSenhaDto) {
     return this.usuarioService.redefinirSenha(id, data);

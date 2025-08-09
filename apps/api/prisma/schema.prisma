@@ -11,6 +11,7 @@ datasource db {
 enum Role {
   ADMINISTRADOR
   VENDEDOR
+  GESTOR
 }
 
 model Usuario {
@@ -23,7 +24,8 @@ model Usuario {
   criado_em DateTime @default(now())
   ativo     Boolean  @default(true)
 
-  indicacoes Indicacao[]
+  indicacoes            Indicacao[]
+  EstabelecimentoCeoPag EstabelecimentoCeoPag[]
 
   @@map("usuarios")
 }
@@ -39,8 +41,10 @@ model EstabelecimentoCeoPag {
   created_at      DateTime
   updated_at      DateTime?
   deleted_at      DateTime?
+  gestor_id       String?
 
   indicacao Indicacao?
+  gestor    Usuario?   @relation(fields: [gestor_id], references: [id])
 
   @@unique([ceo_pag_id, account_source])
   @@map("estabelecimentos_ceopag")

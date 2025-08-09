@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Usuario } from '../../usuario/dto/usuario.dto';
 
 export class EstabelecimentoDto {
   @ApiProperty()
@@ -42,4 +43,10 @@ export class EstabelecimentoDto {
     required: false,
   })
   indicacao?: string;
+
+  @ApiProperty({
+    required: false,
+    type: Usuario,
+  })
+  gestor?: Usuario;
 }

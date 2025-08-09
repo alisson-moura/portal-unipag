@@ -5,36 +5,36 @@ paths:
       operationId: ConfiguracoesController_getTaxaAdministrativa
       parameters: []
       responses:
-        '200':
+        "200":
           description: Taxa administrativa retornada com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaxaAdministrativaResponseDto'
-        '400':
+                $ref: "#/components/schemas/TaxaAdministrativaResponseDto"
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
+                $ref: "#/components/schemas/HttpError"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
+                $ref: "#/components/schemas/HttpError"
+        "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
+                $ref: "#/components/schemas/HttpError"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
+                $ref: "#/components/schemas/HttpError"
       security:
         - bearer: []
       summary: Obter a taxa administrativa atual
@@ -55,38 +55,38 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateTaxaDto'
+              $ref: "#/components/schemas/UpdateTaxaDto"
       responses:
-        '200':
+        "200":
           description: Taxa administrativa atualizada com sucesso.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TaxaAdministrativaResponseDto'
-        '400':
+                $ref: "#/components/schemas/TaxaAdministrativaResponseDto"
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
+                $ref: "#/components/schemas/HttpError"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
+                $ref: "#/components/schemas/HttpError"
+        "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
+                $ref: "#/components/schemas/HttpError"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
+                $ref: "#/components/schemas/HttpError"
       security:
         - bearer: []
       summary: Atualizar a taxa administrativa
@@ -101,22 +101,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RequestLoginDto'
+              $ref: "#/components/schemas/RequestLoginDto"
       responses:
-        '200':
-          description: ''
+        "200":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResponseLoginDto'
-        '400':
+                $ref: "#/components/schemas/ResponseLoginDto"
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
-          description: ''
+                $ref: "#/components/schemas/HttpError"
+        "401":
+          description: ""
           content:
             application/json:
               schema:
@@ -128,18 +128,18 @@ paths:
                   message:
                     type: string
                     example: Bad Request
-        '404':
+        "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
+                $ref: "#/components/schemas/HttpError"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
+                $ref: "#/components/schemas/HttpError"
       tags:
         - Auth
   /api/auth/perfil:
@@ -147,36 +147,36 @@ paths:
       operationId: AuthController_getProfile
       parameters: []
       responses:
-        '200':
-          description: ''
+        "200":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserPayloadDto'
-        '400':
+                $ref: "#/components/schemas/UserPayloadDto"
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
+                $ref: "#/components/schemas/HttpError"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
+                $ref: "#/components/schemas/HttpError"
+        "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
+                $ref: "#/components/schemas/HttpError"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
+                $ref: "#/components/schemas/HttpError"
       security:
         - bearer: []
       tags:
@@ -190,34 +190,34 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateUsuarioDto'
+              $ref: "#/components/schemas/CreateUsuarioDto"
       responses:
-        '201':
-          description: ''
-        '400':
+        "201":
+          description: ""
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
+                $ref: "#/components/schemas/HttpError"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
+                $ref: "#/components/schemas/HttpError"
+        "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
+                $ref: "#/components/schemas/HttpError"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
+                $ref: "#/components/schemas/HttpError"
       security:
         - bearer: []
       summary: Cadastra um novo usuário no sistema
@@ -234,40 +234,41 @@ paths:
             enum:
               - ADMINISTRADOR
               - VENDEDOR
+              - GESTOR
             type: string
       responses:
-        '200':
-          description: ''
+        "200":
+          description: ""
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Usuario'
-        '400':
+                  $ref: "#/components/schemas/Usuario"
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
+                $ref: "#/components/schemas/HttpError"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
+                $ref: "#/components/schemas/HttpError"
+        "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
+                $ref: "#/components/schemas/HttpError"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
+                $ref: "#/components/schemas/HttpError"
       security:
         - bearer: []
       summary: Lista todos os usuários
@@ -284,36 +285,36 @@ paths:
           schema:
             type: string
       responses:
-        '200':
-          description: ''
+        "200":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Usuario'
-        '400':
+                $ref: "#/components/schemas/Usuario"
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
+                $ref: "#/components/schemas/HttpError"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
+                $ref: "#/components/schemas/HttpError"
+        "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
+                $ref: "#/components/schemas/HttpError"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
+                $ref: "#/components/schemas/HttpError"
       security:
         - bearer: []
       summary: Dados do usuário
@@ -332,34 +333,34 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AlterarStatusDto'
+              $ref: "#/components/schemas/AlterarStatusDto"
       responses:
-        '200':
-          description: ''
-        '400':
+        "200":
+          description: ""
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
+                $ref: "#/components/schemas/HttpError"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
+                $ref: "#/components/schemas/HttpError"
+        "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
+                $ref: "#/components/schemas/HttpError"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
+                $ref: "#/components/schemas/HttpError"
       security:
         - bearer: []
       summary: Atualiza o status
@@ -379,34 +380,34 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RedefinirSenhaDto'
+              $ref: "#/components/schemas/RedefinirSenhaDto"
       responses:
-        '200':
-          description: ''
-        '400':
+        "200":
+          description: ""
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
+                $ref: "#/components/schemas/HttpError"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
+                $ref: "#/components/schemas/HttpError"
+        "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
+                $ref: "#/components/schemas/HttpError"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
+                $ref: "#/components/schemas/HttpError"
       security:
         - bearer: []
       summary: Redefini a senha do usuário
@@ -418,38 +419,38 @@ paths:
       operationId: VendedorController_findAll
       parameters: []
       responses:
-        '200':
+        "200":
           description: Lista de vendedores retornada com sucesso.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/VendedorResponseDto'
-        '400':
+                  $ref: "#/components/schemas/VendedorResponseDto"
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
+                $ref: "#/components/schemas/HttpError"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
+                $ref: "#/components/schemas/HttpError"
+        "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
+                $ref: "#/components/schemas/HttpError"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
+                $ref: "#/components/schemas/HttpError"
       security:
         - bearer: []
       summary: Lista todos os vendedores
@@ -471,34 +472,34 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateIndicacaoDto'
+              $ref: "#/components/schemas/CreateIndicacaoDto"
       responses:
-        '204':
-          description: ''
-        '400':
+        "204":
+          description: ""
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
+                $ref: "#/components/schemas/HttpError"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
+                $ref: "#/components/schemas/HttpError"
+        "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
+                $ref: "#/components/schemas/HttpError"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
+                $ref: "#/components/schemas/HttpError"
       security:
         - bearer: []
       summary: Cria um novo vínculo (indicação) entre um vendedor e um estabelecimento.
@@ -515,38 +516,38 @@ paths:
             example: a1b2c3d4-e5f6-7890-1234-567890abcdef
             type: string
       responses:
-        '200':
+        "200":
           description: Lista de indicações retornada com sucesso.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/IndicacaoResponseDto'
-        '400':
+                  $ref: "#/components/schemas/IndicacaoResponseDto"
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
+                $ref: "#/components/schemas/HttpError"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
+                $ref: "#/components/schemas/HttpError"
+        "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
+                $ref: "#/components/schemas/HttpError"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
+                $ref: "#/components/schemas/HttpError"
       security:
         - bearer: []
       summary: Lista todos os estabelecimentos indicados por um vendedor.
@@ -573,34 +574,34 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateIndicacaoDto'
+              $ref: "#/components/schemas/UpdateIndicacaoDto"
       responses:
-        '204':
+        "204":
           description: Taxa de comissão atualizada com sucesso.
-        '400':
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
+                $ref: "#/components/schemas/HttpError"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
+                $ref: "#/components/schemas/HttpError"
+        "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
+                $ref: "#/components/schemas/HttpError"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
+                $ref: "#/components/schemas/HttpError"
       security:
         - bearer: []
       summary: Atualiza a taxa de comissão de uma indicação específica.
@@ -622,32 +623,32 @@ paths:
           schema:
             type: string
       responses:
-        '204':
+        "204":
           description: Vínculo removido com sucesso.
-        '400':
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
+                $ref: "#/components/schemas/HttpError"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
+                $ref: "#/components/schemas/HttpError"
+        "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
+                $ref: "#/components/schemas/HttpError"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
+                $ref: "#/components/schemas/HttpError"
       security:
         - bearer: []
       summary: Remove o vínculo (indicação) entre um vendedor e um estabelecimento.
@@ -660,48 +661,48 @@ paths:
         - name: start_date
           required: true
           in: query
-          description: 'A data de início do período (formato: YYYY-MM-DD)'
+          description: "A data de início do período (formato: YYYY-MM-DD)"
           schema:
-            example: '2025-01-01'
+            example: "2025-01-01"
             type: string
         - name: finish_date
           required: true
           in: query
-          description: 'A data final do período (formato: YYYY-MM-DD)'
+          description: "A data final do período (formato: YYYY-MM-DD)"
           schema:
-            example: '2025-01-31'
+            example: "2025-01-31"
             type: string
       responses:
-        '200':
-          description: ''
+        "200":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TotalDto'
-        '400':
+                $ref: "#/components/schemas/TotalDto"
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
+                $ref: "#/components/schemas/HttpError"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
+                $ref: "#/components/schemas/HttpError"
+        "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
+                $ref: "#/components/schemas/HttpError"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
+                $ref: "#/components/schemas/HttpError"
       security:
         - bearer: []
       summary: Total de comissão no período informado
@@ -714,50 +715,50 @@ paths:
         - name: start_date
           required: true
           in: query
-          description: 'A data de início do período (formato: YYYY-MM-DD)'
+          description: "A data de início do período (formato: YYYY-MM-DD)"
           schema:
-            example: '2025-01-01'
+            example: "2025-01-01"
             type: string
         - name: finish_date
           required: true
           in: query
-          description: 'A data final do período (formato: YYYY-MM-DD)'
+          description: "A data final do período (formato: YYYY-MM-DD)"
           schema:
-            example: '2025-01-31'
+            example: "2025-01-31"
             type: string
       responses:
-        '200':
-          description: ''
+        "200":
+          description: ""
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/RankingVendedoresDto'
-        '400':
+                  $ref: "#/components/schemas/RankingVendedoresDto"
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
+                $ref: "#/components/schemas/HttpError"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
+                $ref: "#/components/schemas/HttpError"
+        "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
+                $ref: "#/components/schemas/HttpError"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
+                $ref: "#/components/schemas/HttpError"
       security:
         - bearer: []
       summary: Comissão por vendedor no perido informado
@@ -768,36 +769,36 @@ paths:
       operationId: RelatoriosController_totalVendedores
       parameters: []
       responses:
-        '200':
-          description: ''
+        "200":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TotalDto'
-        '400':
+                $ref: "#/components/schemas/TotalDto"
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
+                $ref: "#/components/schemas/HttpError"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
+                $ref: "#/components/schemas/HttpError"
+        "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
+                $ref: "#/components/schemas/HttpError"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
+                $ref: "#/components/schemas/HttpError"
       security:
         - bearer: []
       summary: Total de vendedores ativos
@@ -808,36 +809,36 @@ paths:
       operationId: RelatoriosController_totalEstabelecimentos
       parameters: []
       responses:
-        '200':
-          description: ''
+        "200":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TotalDto'
-        '400':
+                $ref: "#/components/schemas/TotalDto"
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
+                $ref: "#/components/schemas/HttpError"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
+                $ref: "#/components/schemas/HttpError"
+        "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
+                $ref: "#/components/schemas/HttpError"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
+                $ref: "#/components/schemas/HttpError"
       security:
         - bearer: []
       summary: Total de estabelecimentos atríbuidos a vendedores
@@ -856,48 +857,48 @@ paths:
         - name: start_date
           required: true
           in: query
-          description: 'A data de início do período (formato: YYYY-MM-DD)'
+          description: "A data de início do período (formato: YYYY-MM-DD)"
           schema:
-            example: '2025-01-01'
+            example: "2025-01-01"
             type: string
         - name: finish_date
           required: true
           in: query
-          description: 'A data final do período (formato: YYYY-MM-DD)'
+          description: "A data final do período (formato: YYYY-MM-DD)"
           schema:
-            example: '2025-01-31'
+            example: "2025-01-31"
             type: string
       responses:
-        '200':
-          description: ''
+        "200":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VendedorRecebimentosDto'
-        '400':
+                $ref: "#/components/schemas/VendedorRecebimentosDto"
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
+                $ref: "#/components/schemas/HttpError"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
+                $ref: "#/components/schemas/HttpError"
+        "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
+                $ref: "#/components/schemas/HttpError"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
+                $ref: "#/components/schemas/HttpError"
       security:
         - bearer: []
       summary: Recebimentos do vendedor no período informado
@@ -916,48 +917,48 @@ paths:
         - name: start_date
           required: true
           in: query
-          description: 'A data de início do período (formato: YYYY-MM-DD)'
+          description: "A data de início do período (formato: YYYY-MM-DD)"
           schema:
-            example: '2025-01-01'
+            example: "2025-01-01"
             type: string
         - name: finish_date
           required: true
           in: query
-          description: 'A data final do período (formato: YYYY-MM-DD)'
+          description: "A data final do período (formato: YYYY-MM-DD)"
           schema:
-            example: '2025-01-31'
+            example: "2025-01-31"
             type: string
       responses:
-        '200':
-          description: ''
+        "200":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EstabelecimentoRecebimentosDto'
-        '400':
+                $ref: "#/components/schemas/EstabelecimentoRecebimentosDto"
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
+                $ref: "#/components/schemas/HttpError"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
+                $ref: "#/components/schemas/HttpError"
+        "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
+                $ref: "#/components/schemas/HttpError"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
+                $ref: "#/components/schemas/HttpError"
       security:
         - bearer: []
       summary: Recebimentos do vendedor no estabelecimento e periodo informados
@@ -970,16 +971,16 @@ paths:
         - name: start_date
           required: true
           in: query
-          description: 'A data de início do período (formato: YYYY-MM-DD)'
+          description: "A data de início do período (formato: YYYY-MM-DD)"
           schema:
-            example: '2025-01-01'
+            example: "2025-01-01"
             type: string
         - name: finish_date
           required: true
           in: query
-          description: 'A data final do período (formato: YYYY-MM-DD)'
+          description: "A data final do período (formato: YYYY-MM-DD)"
           schema:
-            example: '2025-01-31'
+            example: "2025-01-31"
             type: string
         - name: page
           required: true
@@ -996,36 +997,36 @@ paths:
             example: 1
             type: number
       responses:
-        '200':
-          description: ''
+        "200":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionResponseDto'
-        '400':
+                $ref: "#/components/schemas/TransactionResponseDto"
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
+                $ref: "#/components/schemas/HttpError"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
+                $ref: "#/components/schemas/HttpError"
+        "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
+                $ref: "#/components/schemas/HttpError"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
+                $ref: "#/components/schemas/HttpError"
       security:
         - bearer: []
       summary: Relatório de vendas e transações
@@ -1038,48 +1039,48 @@ paths:
         - name: start_date
           required: true
           in: query
-          description: 'A data de início do período (formato: YYYY-MM-DD)'
+          description: "A data de início do período (formato: YYYY-MM-DD)"
           schema:
-            example: '2025-01-01'
+            example: "2025-01-01"
             type: string
         - name: finish_date
           required: true
           in: query
-          description: 'A data final do período (formato: YYYY-MM-DD)'
+          description: "A data final do período (formato: YYYY-MM-DD)"
           schema:
-            example: '2025-01-31'
+            example: "2025-01-31"
             type: string
       responses:
-        '200':
-          description: ''
+        "200":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResumoTransacoesDto'
-        '400':
+                $ref: "#/components/schemas/ResumoTransacoesDto"
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
+                $ref: "#/components/schemas/HttpError"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
+                $ref: "#/components/schemas/HttpError"
+        "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
+                $ref: "#/components/schemas/HttpError"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
+                $ref: "#/components/schemas/HttpError"
       security:
         - bearer: []
       summary: Resumo das transações no periodo informado
@@ -1092,48 +1093,48 @@ paths:
         - name: start_date
           required: true
           in: query
-          description: 'A data de início do período (formato: YYYY-MM-DD)'
+          description: "A data de início do período (formato: YYYY-MM-DD)"
           schema:
-            example: '2025-01-01'
+            example: "2025-01-01"
             type: string
         - name: finish_date
           required: true
           in: query
-          description: 'A data final do período (formato: YYYY-MM-DD)'
+          description: "A data final do período (formato: YYYY-MM-DD)"
           schema:
-            example: '2025-01-31'
+            example: "2025-01-31"
             type: string
       responses:
-        '200':
-          description: ''
+        "200":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResumoBandeirasDto'
-        '400':
+                $ref: "#/components/schemas/ResumoBandeirasDto"
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
+                $ref: "#/components/schemas/HttpError"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
+                $ref: "#/components/schemas/HttpError"
+        "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
+                $ref: "#/components/schemas/HttpError"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
+                $ref: "#/components/schemas/HttpError"
       security:
         - bearer: []
       summary: Resumo das transações por bandeira no periodo informado
@@ -1146,48 +1147,48 @@ paths:
         - name: start_date
           required: true
           in: query
-          description: 'A data de início do período (formato: YYYY-MM-DD)'
+          description: "A data de início do período (formato: YYYY-MM-DD)"
           schema:
-            example: '2025-01-01'
+            example: "2025-01-01"
             type: string
         - name: finish_date
           required: true
           in: query
-          description: 'A data final do período (formato: YYYY-MM-DD)'
+          description: "A data final do período (formato: YYYY-MM-DD)"
           schema:
-            example: '2025-01-31'
+            example: "2025-01-31"
             type: string
       responses:
-        '200':
-          description: ''
+        "200":
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ResumoTransacoesPeriodoDto'
-        '400':
+                $ref: "#/components/schemas/ResumoTransacoesPeriodoDto"
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
+                $ref: "#/components/schemas/HttpError"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
+                $ref: "#/components/schemas/HttpError"
+        "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
+                $ref: "#/components/schemas/HttpError"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
+                $ref: "#/components/schemas/HttpError"
       security:
         - bearer: []
       summary: Resumo das transações por status no periodo informado
@@ -1198,47 +1199,129 @@ paths:
       operationId: EstabelecimentosController_findAll
       parameters: []
       responses:
-        '200':
+        "200":
           description: Lista de estabelecimentos retornada com sucesso.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/EstabelecimentoDto'
-        '400':
+                  $ref: "#/components/schemas/EstabelecimentoDto"
+        "400":
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '401':
+                $ref: "#/components/schemas/HttpError"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '404':
+                $ref: "#/components/schemas/HttpError"
+        "404":
           description: Not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
-        '500':
+                $ref: "#/components/schemas/HttpError"
+        "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HttpError'
+                $ref: "#/components/schemas/HttpError"
       security:
         - bearer: []
       summary: Listar todos os estabelecimentos
       tags:
         - Estabelecimentos
+  /api/estabelecimentos/gestor:
+    post:
+      operationId: EstabelecimentosController_atribuirGestor
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AtribuirGestorDto"
+      responses:
+        "201":
+          description: ""
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+      security:
+        - bearer: []
+      tags:
+        - Estabelecimentos
+  /api/estabelecimentos/{id}/gestor:
+    delete:
+      operationId: EstabelecimentosController_removerGestor
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Gestor removido com sucesso.
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+      security:
+        - bearer: []
+      summary: Remover gestor de um estabelecimento
+      tags:
+        - Estabelecimentos
 info:
   title: Portal Unipag
   description: Documentação do portal unipag
-  version: '1.0'
+  version: "1.0"
   contact: {}
 tags: []
 servers:
@@ -1271,13 +1354,13 @@ components:
           description: ID único da taxa administrativa.
         taxa:
           type: number
-          description: 'Valor da taxa administrativa (ex: 0.0058 para 0.58%).'
+          description: "Valor da taxa administrativa (ex: 0.0058 para 0.58%)."
           example: 0.0058
         atualizado_em:
           format: date-time
           type: string
           description: Data da última atualização.
-          example: '2025-08-02T13:42:32.000Z'
+          example: "2025-08-02T13:42:32.000Z"
       required:
         - id
         - taxa
@@ -1286,7 +1369,7 @@ components:
       type: object
       properties:
         taxa_administrativa:
-          $ref: '#/components/schemas/TaxaAdministrativaDto'
+          $ref: "#/components/schemas/TaxaAdministrativaDto"
       required:
         - taxa_administrativa
     UpdateTaxaDto:
@@ -1357,6 +1440,7 @@ components:
           enum:
             - ADMINISTRADOR
             - VENDEDOR
+            - GESTOR
         senha:
           type: string
       required:
@@ -1381,6 +1465,7 @@ components:
           enum:
             - ADMINISTRADOR
             - VENDEDOR
+            - GESTOR
         criado_em:
           format: date-time
           type: string
@@ -1422,13 +1507,14 @@ components:
           example: joao.silva@example.com
         telefone:
           type: object
-          example: '11987654321'
+          example: "11987654321"
           nullable: true
         role:
           type: string
           enum:
             - ADMINISTRADOR
             - VENDEDOR
+            - GESTOR
           example: VENDEDOR
         criado_em:
           format: date-time
@@ -1487,10 +1573,10 @@ components:
         created_at:
           format: date-time
           type: string
-          example: '2023-10-01T12:00:00Z'
+          example: "2023-10-01T12:00:00Z"
         updated_at:
           type: object
-          example: '2023-10-01T12:00:00Z'
+          example: "2023-10-01T12:00:00Z"
       required:
         - id
         - ceo_pag_id
@@ -1520,7 +1606,7 @@ components:
           type: string
           example: b1c2d3e4-f5g6-7890-1234-567890abcdef
         estabelecimento:
-          $ref: '#/components/schemas/EstabelecimentoResponseDto'
+          $ref: "#/components/schemas/EstabelecimentoResponseDto"
       required:
         - id
         - taxa_comissao
@@ -1583,7 +1669,7 @@ components:
         document_number:
           type: string
           description: Número do documento (CNPJ ou CPF) do estabelecimento.
-          example: '12345678000195'
+          example: "12345678000195"
         social_reason:
           type: string
           description: Razão social do estabelecimento.
@@ -1594,7 +1680,7 @@ components:
           example: Nome Fantasia Exemplo
         status:
           type: number
-          description: 'Status do estabelecimento (ex: 1 para Ativo, 0 para Inativo).'
+          description: "Status do estabelecimento (ex: 1 para Ativo, 0 para Inativo)."
           example: 1
         account_source:
           type: string
@@ -1602,6 +1688,8 @@ components:
           example: sistema_legado
         indicacao:
           type: string
+        gestor:
+          $ref: "#/components/schemas/Usuario"
       required:
         - id
         - ceo_pag_id
@@ -1622,7 +1710,7 @@ components:
         liquido:
           type: number
         estabelecimento:
-          $ref: '#/components/schemas/EstabelecimentoDto'
+          $ref: "#/components/schemas/EstabelecimentoDto"
       required:
         - mdr
         - tpv
@@ -1633,11 +1721,11 @@ components:
       type: object
       properties:
         totais:
-          $ref: '#/components/schemas/TotaisDto'
+          $ref: "#/components/schemas/TotaisDto"
         recebimentos:
           type: array
           items:
-            $ref: '#/components/schemas/RecebimentosDto'
+            $ref: "#/components/schemas/RecebimentosDto"
       required:
         - totais
         - recebimentos
@@ -1651,7 +1739,7 @@ components:
         merchants_document_number:
           type: string
           description: Número do documento do estabelecimento.
-          example: '12345678000195'
+          example: "12345678000195"
         merchants_name:
           type: string
           description: Nome do estabelecimento.
@@ -1663,7 +1751,7 @@ components:
         original_document_number:
           type: string
           description: Número do documento original do estabelecimento.
-          example: '12345678000195'
+          example: "12345678000195"
         original_merchants_name:
           type: string
           description: Nome original do estabelecimento.
@@ -1699,19 +1787,19 @@ components:
         transaction_nsu:
           type: string
           description: NSU da transação.
-          example: '123456789'
+          example: "123456789"
         transaction_tef_nsu:
           type: string
           description: NSU do TEF da transação.
-          example: '987654321'
+          example: "987654321"
         transaction_amount:
           type: string
           description: Valor da transação.
-          example: '100.00'
+          example: "100.00"
         original_transaction_amount:
           type: string
           description: Valor original da transação.
-          example: '100.00'
+          example: "100.00"
         split_rules:
           type: object
           description: Regras de divisão da transação.
@@ -1720,11 +1808,11 @@ components:
         transaction_splited:
           type: string
           description: Indica se a transação foi dividida.
-          example: 'false'
+          example: "false"
         transaction_date:
           type: string
           description: Data da transação.
-          example: '2025-07-21T10:00:00Z'
+          example: "2025-07-21T10:00:00Z"
           format: date-time
         payables_installment:
           type: number
@@ -1754,7 +1842,7 @@ components:
         anticipated:
           type: string
           description: Indica se o recebível foi antecipado.
-          example: 'false'
+          example: "false"
         payables_status:
           type: string
           description: Status do recebível.
@@ -1762,12 +1850,12 @@ components:
         payment_date:
           type: string
           description: Data de pagamento.
-          example: '2025-08-20T10:00:00Z'
+          example: "2025-08-20T10:00:00Z"
           format: date-time
         original_payment_date:
           type: string
           description: Data de pagamento original.
-          example: '2025-08-20T10:00:00Z'
+          example: "2025-08-20T10:00:00Z"
           format: date-time
         payables_type:
           type: string
@@ -1776,12 +1864,12 @@ components:
         created_at:
           type: string
           description: Data de criação.
-          example: '2025-07-21T10:00:00Z'
+          example: "2025-07-21T10:00:00Z"
           format: date-time
         updated_at:
           type: string
           description: Data da última atualização.
-          example: '2025-07-21T10:00:00Z'
+          example: "2025-07-21T10:00:00Z"
           format: date-time
       required:
         - merchants_id
@@ -1833,7 +1921,7 @@ components:
         pagamentos:
           type: array
           items:
-            $ref: '#/components/schemas/PayableDto'
+            $ref: "#/components/schemas/PayableDto"
       required:
         - mdr
         - tpv
@@ -1845,11 +1933,11 @@ components:
       type: object
       properties:
         totais:
-          $ref: '#/components/schemas/TotaisDto'
+          $ref: "#/components/schemas/TotaisDto"
         recebimentos:
           type: array
           items:
-            $ref: '#/components/schemas/DailyTotal'
+            $ref: "#/components/schemas/DailyTotal"
       required:
         - totais
         - recebimentos
@@ -1873,23 +1961,23 @@ components:
         aprovadas:
           description: Contador de transações aprovadas.
           allOf:
-            - $ref: '#/components/schemas/StatusCounter'
+            - $ref: "#/components/schemas/StatusCounter"
         pendentes:
           description: Contador de transações pendentes.
           allOf:
-            - $ref: '#/components/schemas/StatusCounter'
+            - $ref: "#/components/schemas/StatusCounter"
         negadas:
           description: Contador de transações negadas.
           allOf:
-            - $ref: '#/components/schemas/StatusCounter'
+            - $ref: "#/components/schemas/StatusCounter"
         desfeitas:
           description: Contador de transações desfeitas.
           allOf:
-            - $ref: '#/components/schemas/StatusCounter'
+            - $ref: "#/components/schemas/StatusCounter"
         devolvidas:
           description: Contador de transações devolvidas.
           allOf:
-            - $ref: '#/components/schemas/StatusCounter'
+            - $ref: "#/components/schemas/StatusCounter"
       required:
         - aprovadas
         - pendentes
@@ -1913,7 +2001,7 @@ components:
         acquirer_response_code:
           type: string
           description: Código de resposta do adquirente.
-          example: '00'
+          example: "00"
         acquirer_name:
           type: string
           description: Nome do adquirente.
@@ -1921,15 +2009,15 @@ components:
         acquirer_id:
           type: string
           description: ID do adquirente.
-          example: '100'
+          example: "100"
         authorization_code:
           type: string
           description: Código de autorização da transação.
-          example: '123456'
+          example: "123456"
         tef_nsu:
           type: string
           description: NSU da transação TEF.
-          example: '987654321'
+          example: "987654321"
         uuid:
           type: string
           description: Identificador único universal da transação.
@@ -1937,11 +2025,11 @@ components:
         nsu:
           type: string
           description: Número Sequencial Único (NSU).
-          example: '123456789'
+          example: "123456789"
         amount:
           type: string
           description: Valor da transação.
-          example: '150.00'
+          example: "150.00"
         amount_operation:
           type: object
           description: Valor da operação (tipo variado).
@@ -1949,7 +2037,7 @@ components:
         fee_operation:
           type: string
           description: Taxa da operação.
-          example: '3.50'
+          example: "3.50"
         custo_adquirente:
           type: number
           description: Custo do adquirente.
@@ -1957,7 +2045,7 @@ components:
         custo_mdr:
           type: string
           description: Custo MDR (Merchant Discount Rate).
-          example: '4.50'
+          example: "4.50"
         valor_interchange:
           type: number
           description: Valor da taxa de intercâmbio.
@@ -1969,7 +2057,7 @@ components:
         refunded_amount:
           type: string
           description: Valor devolvido.
-          example: '0.00'
+          example: "0.00"
         installments:
           type: number
           description: Número de parcelas.
@@ -1993,11 +2081,11 @@ components:
         card_first_digits:
           type: string
           description: Primeiros dígitos do cartão.
-          example: '411111'
+          example: "411111"
         card_last_digits:
           type: string
           description: Últimos dígitos do cartão.
-          example: '1111'
+          example: "1111"
         card_brand:
           type: string
           description: Bandeira do cartão.
@@ -2069,27 +2157,27 @@ components:
         start_date:
           type: string
           description: Data de início da transação.
-          example: '2025-07-29T10:00:00.000Z'
+          example: "2025-07-29T10:00:00.000Z"
           format: date-time
         finish_date:
           type: string
           description: Data de finalização da transação.
-          example: '2025-07-29T10:00:05.000Z'
+          example: "2025-07-29T10:00:05.000Z"
           format: date-time
         payment_date:
           type: string
           description: Data de pagamento/liquidação.
-          example: '2025-08-28T00:00:00.000Z'
+          example: "2025-08-28T00:00:00.000Z"
           format: date-time
         created_at:
           type: string
           description: Data de criação do registro.
-          example: '2025-07-29T10:00:05.000Z'
+          example: "2025-07-29T10:00:05.000Z"
           format: date-time
         updated_at:
           type: string
           description: Data da última atualização do registro.
-          example: '2025-07-29T10:00:05.000Z'
+          example: "2025-07-29T10:00:05.000Z"
           format: date-time
         original_merchants_id:
           type: number
@@ -2170,7 +2258,7 @@ components:
           description: Lista de transações da página atual.
           type: array
           items:
-            $ref: '#/components/schemas/Transaction'
+            $ref: "#/components/schemas/Transaction"
       required:
         - total
         - perPage
@@ -2187,11 +2275,11 @@ components:
         contador:
           description: Objeto contendo os contadores de transações por status.
           allOf:
-            - $ref: '#/components/schemas/Contador'
+            - $ref: "#/components/schemas/Contador"
         transacoes:
           description: Objeto com os dados paginados das transações.
           allOf:
-            - $ref: '#/components/schemas/PaginatedTransactions'
+            - $ref: "#/components/schemas/PaginatedTransactions"
       required:
         - mensagem
         - contador
@@ -2216,19 +2304,19 @@ components:
         total:
           description: Dados consolidados do faturamento total.
           allOf:
-            - $ref: '#/components/schemas/DetalheFaturamentoDto'
+            - $ref: "#/components/schemas/DetalheFaturamentoDto"
         debito:
           description: Dados referentes às transações de débito.
           allOf:
-            - $ref: '#/components/schemas/DetalheFaturamentoDto'
+            - $ref: "#/components/schemas/DetalheFaturamentoDto"
         credito:
           description: Dados referentes às transações de crédito à vista.
           allOf:
-            - $ref: '#/components/schemas/DetalheFaturamentoDto'
+            - $ref: "#/components/schemas/DetalheFaturamentoDto"
         parcelado:
           description: Dados referentes às transações de crédito parcelado.
           allOf:
-            - $ref: '#/components/schemas/DetalheFaturamentoDto'
+            - $ref: "#/components/schemas/DetalheFaturamentoDto"
       required:
         - total
         - debito
@@ -2240,7 +2328,7 @@ components:
         Faturamento:
           description: O objeto principal que contém o resumo do faturamento.
           allOf:
-            - $ref: '#/components/schemas/DadosFaturamentoDto'
+            - $ref: "#/components/schemas/DadosFaturamentoDto"
       required:
         - Faturamento
     BandeiraItemDto:
@@ -2268,7 +2356,7 @@ components:
           description: Uma lista contendo o resumo de vendas por bandeira.
           type: array
           items:
-            $ref: '#/components/schemas/BandeiraItemDto'
+            $ref: "#/components/schemas/BandeiraItemDto"
       required:
         - object
         - items
@@ -2278,7 +2366,7 @@ components:
         Data:
           type: string
           description: A data a que o resumo se refere, no formato AAAA-MM-DD.
-          example: '2025-07-31'
+          example: "2025-07-31"
         Aprovadas:
           type: number
           description: A quantidade de transações aprovadas neste dia.
@@ -2306,18 +2394,28 @@ components:
         percentualAprovadas:
           type: string
           description: O percentual total de transações aprovadas no período.
-          example: '96.36'
+          example: "96.36"
         percentualNegadas:
           type: string
           description: O percentual total de transações negadas no período.
-          example: '3.64'
+          example: "3.64"
         items:
           description: Uma lista contendo o resumo diário de transações.
           type: array
           items:
-            $ref: '#/components/schemas/TransacaoDiariaDto'
+            $ref: "#/components/schemas/TransacaoDiariaDto"
       required:
         - object
         - percentualAprovadas
         - percentualNegadas
         - items
+    AtribuirGestorDto:
+      type: object
+      properties:
+        estabelecimentoId:
+          type: string
+        gestorId:
+          type: string
+      required:
+        - estabelecimentoId
+        - gestorId

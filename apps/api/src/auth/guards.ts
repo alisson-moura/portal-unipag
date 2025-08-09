@@ -58,7 +58,7 @@ export class RolesGuard implements CanActivate {
       return true;
     }
 
-    if (user.role === 'VENDEDOR') {
+    if (user.role === 'VENDEDOR' || user.role === 'GESTOR') {
       const id = params.id || params.vendedorId;
       if (id && user.id === id) {
         return true;

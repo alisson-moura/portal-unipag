@@ -30,7 +30,7 @@ export class UsuarioService {
     });
   }
 
-  async all({ role }: { role?: 'ADMINISTRADOR' | 'VENDEDOR' }) {
+  async all({ role }: { role?: 'ADMINISTRADOR' | 'VENDEDOR' | 'GESTOR' }) {
     const usuarios = await this.database.usuario.findMany({
       where: {
         role,
