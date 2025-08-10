@@ -40,11 +40,14 @@ export class EstabelecimentosController {
     type: EstabelecimentoDto,
     isArray: true,
   })
-  @Roles('ADMINISTRADOR', 'VENDEDOR')
+  @Roles('ADMINISTRADOR', 'VENDEDOR', 'GESTOR')
   findAll(@Req() req: { user: UserPayloadDto }) {
     const { user } = req;
     if (user.role === 'VENDEDOR') {
       return this.estabelecimentosService.findAll(user.id);
+    }
+    if (user.role === 'GESTOR') {
+      return this.estabelecimentosService.findAllByGestor(user.id);
     }
     return this.estabelecimentosService.findAll();
   }

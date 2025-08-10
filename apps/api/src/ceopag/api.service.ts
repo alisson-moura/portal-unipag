@@ -22,6 +22,8 @@ import { PeriodQueryDto } from 'src/relatorios/dto/period-query';
 import { ResumoTransacoesDto } from './dto/resumo-transacoes.dto';
 import { ResumoBandeirasDto } from './dto/resumo-bandeiras';
 import { ResumoTransacoesPeriodoDto } from './dto/resumo-transacoes-periodo';
+import { TransacaoCsvDto } from './dto/transacoes-csv.dto';
+import * as Papa from 'papaparse';
 
 export type AccountIdentifier = 'ONE' | 'TWO';
 
@@ -270,6 +272,50 @@ export class ApiCeoPagService {
       return data;
     } catch (error) {
       console.error('Falha ao buscar recebíveis liquidados:', error);
+      throw error;
+    }
+  }
+
+  async todasTransacoes(
+    account: AccountIdentifier,
+    query: TransactionQueryDto,
+  ): Promise<TransacaoCsvDto[]> {
+    const url = `${this.BASE_URL}/${this.PREFIX}/${this.VERSION_API}/transacoes`;
+    const auth = await this.loginByAccount(account);
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${auth.access_token}`,
+      Customer: auth.customers_id,
+      Vendor: auth.vendor_id,
+    };
+    try {
+      const { data } = await firstValueFrom(
+        this.httpService
+          .get<string>(url, {
+            headers,
+            params: query,
+            responseType: 'text',
+          })
+          .pipe(
+            catchError((error: AxiosError) => {
+              console.error(error.response?.data);
+              throw new HttpException(
+                error.message,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+              );
+            }),
+          ),
+      );
+
+      const parsed = Papa.parse<TransacaoCsvDto>(data, {
+        header: true,
+        delimiter: ';',
+        skipEmptyLines: true,
+      });
+
+      return parsed.data;
+    } catch (error) {
+      console.error('Falha ao buscar resumo transações:', error);
       throw error;
     }
   }

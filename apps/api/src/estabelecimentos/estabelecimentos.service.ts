@@ -5,12 +5,25 @@ import { AtribuirGestorDto } from './dto/atribuir-gestor.dto';
 @Injectable()
 export class EstabelecimentosService {
   constructor(private prismaService: PrismaService) {}
-  findAll(vendedorId?: string) {
+  findAll(usuarioId?: string) {
     return this.prismaService.estabelecimentoCeoPag.findMany({
       where: {
         indicacao: {
-          usuario_id: vendedorId,
+          usuario_id: usuarioId,
         },
+        gestor_id: usuarioId,
+      },
+      include: {
+        indicacao: true,
+        gestor: true,
+      },
+    });
+  }
+
+  findAllByGestor(gestorId: string) {
+    return this.prismaService.estabelecimentoCeoPag.findMany({
+      where: {
+        gestor_id: gestorId,
       },
       include: {
         indicacao: true,
