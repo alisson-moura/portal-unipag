@@ -15,6 +15,7 @@ import {
 } from './dto/recebimentos.dto';
 import { LoginResponseDto } from './dto/login.dto';
 import {
+  Transaction,
   TransactionQueryDto,
   TransactionResponseDto,
 } from './dto/transacoes.dto';
@@ -22,8 +23,6 @@ import { PeriodQueryDto } from 'src/relatorios/dto/period-query';
 import { ResumoTransacoesDto } from './dto/resumo-transacoes.dto';
 import { ResumoBandeirasDto } from './dto/resumo-bandeiras';
 import { ResumoTransacoesPeriodoDto } from './dto/resumo-transacoes-periodo';
-import { TransacaoCsvDto } from './dto/transacoes-csv.dto';
-import * as Papa from 'papaparse';
 
 export type AccountIdentifier = 'ONE' | 'TWO';
 
@@ -276,10 +275,14 @@ export class ApiCeoPagService {
     }
   }
 
+  /**
+   * @description relatório da MovingPay de vendas/transações sem paginação. Utilizado para buscar todas as transações de um estabelecimento em uma unica consulta
+   */
   async todasTransacoes(
     account: AccountIdentifier,
     query: TransactionQueryDto,
-  ): Promise<TransacaoCsvDto[]> {
+  ): Promise<Transaction[]> {
+    console.log('API service Query:  ', query);
     const url = `${this.BASE_URL}/${this.PREFIX}/${this.VERSION_API}/transacoes`;
     const auth = await this.loginByAccount(account);
     const headers = {
@@ -291,10 +294,14 @@ export class ApiCeoPagService {
     try {
       const { data } = await firstValueFrom(
         this.httpService
-          .get<string>(url, {
+          .get<{ message: string; data: Transaction[] }>(url, {
             headers,
-            params: query,
-            responseType: 'text',
+            params: {
+              mid: query.mid,
+              start_date: query.start_date,
+              finish_date: query.finish_date,
+              download: 1,
+            },
           })
           .pipe(
             catchError((error: AxiosError) => {
@@ -307,13 +314,7 @@ export class ApiCeoPagService {
           ),
       );
 
-      const parsed = Papa.parse<TransacaoCsvDto>(data, {
-        header: true,
-        delimiter: ';',
-        skipEmptyLines: true,
-      });
-
-      return parsed.data;
+      return data.data;
     } catch (error) {
       console.error('Falha ao buscar resumo transações:', error);
       throw error;

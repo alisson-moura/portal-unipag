@@ -1194,6 +1194,74 @@ paths:
       summary: Resumo das transações por status no periodo informado
       tags:
         - Relatorios
+  /api/relatorios/transacoes/gestor:
+    get:
+      operationId: RelatoriosController_transacoesPorGestor
+      parameters:
+        - name: start_date
+          required: true
+          in: query
+          description: "A data de início do período (formato: YYYY-MM-DD)"
+          schema:
+            example: "2025-01-01"
+            type: string
+        - name: finish_date
+          required: true
+          in: query
+          description: "A data final do período (formato: YYYY-MM-DD)"
+          schema:
+            example: "2025-01-31"
+            type: string
+        - name: page
+          required: true
+          in: query
+          description: Pagina do relatório
+          schema:
+            example: 1
+            type: number
+        - name: mid
+          required: false
+          in: query
+          description: ID do estabelecimento
+          schema:
+            example: 1
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RelatoriosTransacoesGestorDto"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HttpError"
+      security:
+        - bearer: []
+      summary: Relatório de vendas e transações para o gestor de estabelecimentos
+      tags:
+        - Relatorios
   /api/estabelecimentos:
     get:
       operationId: EstabelecimentosController_findAll
@@ -1403,6 +1471,7 @@ components:
           enum:
             - ADMINISTRADOR
             - VENDEDOR
+            - GESTOR
         access_token:
           type: string
       required:
@@ -1422,6 +1491,7 @@ components:
           enum:
             - ADMINISTRADOR
             - VENDEDOR
+            - GESTOR
       required:
         - id
         - email
@@ -2409,6 +2479,18 @@ components:
         - percentualAprovadas
         - percentualNegadas
         - items
+    RelatoriosTransacoesGestorDto:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Transaction"
+        contador:
+          $ref: "#/components/schemas/Contador"
+      required:
+        - data
+        - contador
     AtribuirGestorDto:
       type: object
       properties:

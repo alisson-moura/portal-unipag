@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, Req } from '@nestjs/common';
 import { RelatoriosService } from './relatorios.service';
 import {
   ApiBearerAuth,
@@ -18,6 +18,8 @@ import {
 import { ResumoTransacoesDto } from 'src/ceopag/dto/resumo-transacoes.dto';
 import { ResumoBandeirasDto } from 'src/ceopag/dto/resumo-bandeiras';
 import { ResumoTransacoesPeriodoDto } from 'src/ceopag/dto/resumo-transacoes-periodo';
+import { UserPayloadDto } from '../auth/auth.dto';
+import { RelatoriosTransacoesGestorDto } from './dto/relatorio-transacoes-gestor';
 
 @ApiBearerAuth()
 @Controller('relatorios')
@@ -130,5 +132,21 @@ export class RelatoriosController {
     @Query() query: PeriodQueryDto,
   ): Promise<ResumoTransacoesPeriodoDto> {
     return this.relatoriosService.resumoTransacoesDiariasConsolidado(query);
+  }
+
+  @ApiOperation({
+    summary:
+      'Relatório de vendas e transações para o gestor de estabelecimentos',
+  })
+  @ApiOkResponse({ type: RelatoriosTransacoesGestorDto })
+  @Get('/transacoes/gestor')
+  transacoesPorGestor(
+    @Req() req: { user: UserPayloadDto },
+    @Query() query: TransactionQueryDto,
+  ) {
+    return this.relatoriosService.transacoesConsolidadasPorGestor({
+      query,
+      gestor_id: req.user.id,
+    });
   }
 }

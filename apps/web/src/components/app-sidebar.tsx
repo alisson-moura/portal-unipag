@@ -11,6 +11,7 @@ import {
   DollarSign,
   SlidersVertical,
   ChartNoAxesCombined,
+  type LucideIcon,
 } from "lucide-react";
 import {
   Sidebar,
@@ -34,9 +35,22 @@ export function AppSidebar() {
   const { user } = useAuth();
   const location = useLocation();
 
-  const navItems = [
+  const navItems: {
+    title: string;
+    url?: string;
+    icon: LucideIcon;
+    items?: {
+      title: string;
+      url: string;
+      icon: LucideIcon;
+    }[];
+  }[] = [
     { title: "Dashboard", url: "/admin", icon: Home },
-    {
+    { title: "Estabelecimentos", url: "/admin/estabelecimentos", icon: Store },
+  ];
+
+  if (user?.role !== "GESTOR") {
+    navItems.push({
       title: "Recebimentos",
       icon: Wallet,
       items: [
@@ -47,9 +61,8 @@ export function AppSidebar() {
           icon: Store,
         },
       ],
-    },
-    { title: "Estabelecimentos", url: "/admin/estabelecimentos", icon: Store },
-  ];
+    });
+  }
 
   if (user?.role == "ADMINISTRADOR") {
     navItems.splice(2, 0, {

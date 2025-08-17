@@ -17,11 +17,10 @@ import {
 import { Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { PaginatedTransactions, Transaction } from "@/gen";
+import type { Transaction } from "@/gen";
 import { formatCurrency } from "@/lib/format";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { TransactionsPagination } from "./pagination";
 import {
   getPaymentMethodColor,
   getPaymentMethodLabel,
@@ -29,12 +28,10 @@ import {
   getStatusLabel,
 } from "@/components/map-transaction-status";
 
-export function TransactionsList({
-  paginatedTransactions,
-  onPageChange,
+export function TransactionsGestorList({
+  transactions,
 }: {
-  paginatedTransactions: PaginatedTransactions;
-  onPageChange: (page: number) => void;
+  transactions: Transaction[];
 }) {
   const [selectedTransaction, setSelectedTransaction] =
     useState<Transaction | null>(null);
@@ -47,11 +44,6 @@ export function TransactionsList({
 
   return (
     <div className="space-y-4 p-4">
-      <TransactionsPagination
-        page={Number.parseInt(`${paginatedTransactions.page}`)}
-        totalPages={Number.parseInt(`${paginatedTransactions.lastPage}`)}
-        onPageChange={onPageChange}
-      />
       <div className="overflow-x-auto border rounded">
         <Table className="">
           <TableHeader>
@@ -83,7 +75,7 @@ export function TransactionsList({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedTransactions.data.map((transaction, index) => (
+            {transactions.map((transaction, index) => (
               <TableRow key={index} className="hover:bg-gray-50">
                 <TableCell className="text-xs text-gray-700">
                   {(() => {

@@ -12,6 +12,7 @@ import { EstabelecimentoRecebimentosDto } from './dto/estabelecimento-recebiment
 import {
   Contador,
   PaginatedTransactions,
+  StatusCounter,
   TransactionQueryDto,
   TransactionResponseDto,
 } from 'src/ceopag/dto/transacoes.dto';
@@ -325,6 +326,97 @@ export class RelatoriosService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  /**
+   * Relatório de transações para gestores
+   */
+  async transacoesConsolidadasPorGestor({
+    gestor_id,
+    query,
+  }: {
+    query: TransactionQueryDto;
+    gestor_id: string;
+  }) {
+    const estabelecimentos = await this.database.estabelecimentoCeoPag.findMany(
+      {
+        where: {
+          gestor_id,
+          ceo_pag_id: query.mid ? parseInt(`${query.mid}`) : undefined,
+        },
+      },
+    );
+
+    if (estabelecimentos.length < 1) {
+      return [];
+    }
+
+    const transacoesFn = estabelecimentos.map((estabelecimento) =>
+      this.ceopagService.todasTransacoes(
+        estabelecimento.account_source as AccountIdentifier,
+        {
+          ...query,
+          mid: estabelecimento.ceo_pag_id,
+        },
+      ),
+    );
+
+    const todasTransacoes = await Promise.all(transacoesFn);
+
+    const transacoes = todasTransacoes
+      .flat()
+      .sort(
+        (a, b) =>
+          new Date(b.start_date).getTime() - new Date(a.start_date).getTime(),
+      );
+
+    const initCounter = (): StatusCounter => ({
+      valor: 0,
+      quantidade: 0,
+    });
+
+    const counters: Contador = {
+      aprovadas: initCounter(),
+      pendentes: initCounter(),
+      negadas: initCounter(),
+      desfeitas: initCounter(),
+      devolvidas: initCounter(),
+    };
+
+    for (const tx of transacoes) {
+      const amount = parseFloat(tx.amount) || 0;
+
+      switch (tx.status) {
+        case 'APPR':
+          counters.aprovadas.valor! += amount;
+          counters.aprovadas.quantidade! += 1;
+          break;
+        case 'PEND':
+          counters.pendentes.valor! += amount;
+          counters.pendentes.quantidade! += 1;
+          break;
+        case 'DECL':
+          counters.negadas.valor! += amount;
+          counters.negadas.quantidade! += 1;
+          break;
+        case 'REFD':
+          counters.desfeitas.valor! += amount;
+          counters.desfeitas.quantidade! += 1;
+          break;
+        case 'DEVOL':
+          counters.devolvidas.valor! += amount;
+          counters.devolvidas.quantidade! += 1;
+          break;
+        default:
+          // se vier algum status fora dos previstos, ignora
+          break;
+      }
+    }
+
+    return {
+      data: transacoes,
+      contador: counters,
+    };
   }
 
   /**

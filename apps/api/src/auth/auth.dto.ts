@@ -16,7 +16,7 @@ export class UserPayloadDto {
   @ApiProperty()
   email: string;
 
-  @ApiProperty({ enum: ['ADMINISTRADOR', 'VENDEDOR'] })
+  @ApiProperty({ enum: ['ADMINISTRADOR', 'VENDEDOR', 'GESTOR'] })
   role: UserRole;
 }
 
