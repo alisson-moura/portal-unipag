@@ -6,11 +6,11 @@ import {
   CreditCard,
   Wallet,
   User,
-  ShieldUser,
+  ShieldAlert as ShieldUser,
   LayoutDashboard,
   DollarSign,
   SlidersVertical,
-  ChartNoAxesCombined,
+  ArrowUpFromLine as ChartNoAxesCombined,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -102,7 +102,7 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon" variant="sidebar">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

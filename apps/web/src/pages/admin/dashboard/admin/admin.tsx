@@ -48,8 +48,8 @@ export function AdminDashboardPage() {
     useRelatoriosControllerTotalEstabelecimentos();
   const { data: totalVendedores } = useRelatoriosControllerTotalVendedores();
   const { data: comissaoTotal } = useRelatoriosControllerComissao({
-    finish_date: format(range.to, 'yyyy-MM-dd'),
-    start_date: format(range.from, 'yyyy-MM-dd'),
+    finish_date: format(range.to, "yyyy-MM-dd"),
+    start_date: format(range.from, "yyyy-MM-dd"),
   });
 
   const onSubmit = (data: FormValues) => {
@@ -60,7 +60,8 @@ export function AdminDashboardPage() {
     {
       title: "Estabelecimentos",
       value: totalEstabelecimentos?.data.total ?? 0,
-      description: "Total de estabelecimentos que possuem vendedores atribuídos",
+      description:
+        "Total de estabelecimentos que possuem vendedores atribuídos",
       Icon: Store,
       borderColor: "border-blue-500",
       iconColor: "text-blue-500",
@@ -68,7 +69,7 @@ export function AdminDashboardPage() {
     {
       title: "Vendedores",
       value: totalVendedores?.data.total ?? 0,
-      description: "Total de vendededores cadastrados",
+      description: "Total de vendedores cadastrados",
       Icon: Users,
       borderColor: "border-green-500",
       iconColor: "text-green-500",
@@ -80,13 +81,13 @@ export function AdminDashboardPage() {
       Icon: Wallet,
       borderColor: "border-purple-500",
       iconColor: "text-purple-500",
-    }
+    },
   ];
 
   return (
-    <div className="p-4">
-      <div className="flex gap-6 items-end">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
+    <div className="p-4 sm:p-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:gap-6 sm:items-end">
+        <h1 className="text-xl sm:text-2xl font-bold">Dashboard</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
             <FormField
@@ -94,7 +95,7 @@ export function AdminDashboardPage() {
               name="range"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Período</FormLabel>
+                  <FormLabel className="text-sm">Período</FormLabel>
                   <FormControl>
                     <DatePickerWithRange
                       date={field.value}
@@ -108,8 +109,8 @@ export function AdminDashboardPage() {
           </form>
         </Form>
       </div>
-      <Separator className="my-4" />
-      <div className="my-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <Separator className="my-4 sm:my-6" />
+      <div className="my-4 sm:my-6 grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
         {metrics.map((metric) => (
           <MetricCard
             key={metric.title}
@@ -122,7 +123,12 @@ export function AdminDashboardPage() {
           />
         ))}
       </div>
-      <RankingVendedoresChart start_date={format(range.from, 'yyyy-MM-dd')} finish_date={format(range.to, 'yyyy-MM-dd')} />
+      <div className="mt-4 sm:mt-6">
+        <RankingVendedoresChart
+          start_date={format(range.from, "yyyy-MM-dd")}
+          finish_date={format(range.to, "yyyy-MM-dd")}
+        />
+      </div>
     </div>
   );
 }

@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import {
   Table,
@@ -46,13 +48,14 @@ export function TransactionsList({
   };
 
   return (
-    <div className="space-y-4 p-4">
+    <div className="space-y-4 p-2 sm:p-4">
       <TransactionsPagination
         page={Number.parseInt(`${paginatedTransactions.page}`)}
         totalPages={Number.parseInt(`${paginatedTransactions.lastPage}`)}
         onPageChange={onPageChange}
       />
-      <div className="overflow-x-auto border rounded">
+
+      <div className="hidden lg:block overflow-x-auto border rounded">
         <Table className="">
           <TableHeader>
             <TableRow className="bg-gray-50">
@@ -144,40 +147,112 @@ export function TransactionsList({
         </Table>
       </div>
 
-      {/* Transaction Details Dialog */}
+      <div className="lg:hidden space-y-3">
+        {paginatedTransactions.data.map((transaction, index) => (
+          <div key={index} className="bg-white border rounded-lg p-4 shadow-sm">
+            <div className="flex justify-between items-start mb-3">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="h-5 bg-gray-200 rounded px-2 text-xs flex items-center justify-center font-medium">
+                    {transaction.card_brand.toUpperCase()}
+                  </div>
+                  <Badge
+                    className={`text-xs px-2 py-1 ${getStatusColor(transaction.status)}`}
+                  >
+                    ✓ {getStatusLabel(transaction.status)}
+                  </Badge>
+                </div>
+                <div className="text-sm font-medium text-gray-900">
+                  {formatCurrency(Number.parseInt(transaction.amount))}
+                </div>
+                <div className="text-xs text-gray-500">
+                  NSU: {transaction.nsu}
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 bg-blue-500 hover:bg-blue-600 shrink-0"
+                onClick={() => handleViewDetails(transaction)}
+              >
+                <Eye className="h-4 w-4 text-white" />
+              </Button>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Estabelecimento:</span>
+                <span
+                  className="font-medium text-right max-w-[60%] truncate"
+                  title={transaction.merchant_name}
+                >
+                  {transaction.merchant_name}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Modalidade:</span>
+                <Badge
+                  className={`text-xs px-2 py-1 ${getPaymentMethodColor(transaction.payment_method)}`}
+                >
+                  {getPaymentMethodLabel(transaction.payment_method)}
+                </Badge>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Data:</span>
+                <span className="font-medium">
+                  {(() => {
+                    const isoDateString =
+                      transaction.start_date.replace(" ", "T") + "Z";
+                    const date = new Date(isoDateString);
+                    return format(date, "dd/MM/yyyy HH:mm", { locale: ptBR });
+                  })()}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="min-w-[750px] min-h-[50vh] overflow-y-auto">
+        <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Detalhes da Transação</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-lg sm:text-xl">
+              Detalhes da Transação
+            </DialogTitle>
+            <DialogDescription className="text-sm">
               Informações completas da transação selecionada
             </DialogDescription>
           </DialogHeader>
           {selectedTransaction && (
-            <div className="grid gap-6">
-              {/* Informações Principais */}
-              <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <h4 className="font-medium text-sm text-gray-900">
                     Informações Gerais
                   </h4>
                   <div className="space-y-1">
-                    <div className="flex gap-4 text-sm">
-                      <span className="text-gray-600">NSU:</span>
+                    <div className="flex flex-col sm:flex-row sm:gap-4 text-sm">
+                      <span className="text-gray-600 sm:min-w-[100px]">
+                        NSU:
+                      </span>
                       <span className="font-medium">
                         {selectedTransaction.nsu}
                       </span>
                     </div>
-                    <div className="flex gap-4 text-sm">
-                      <span className="text-gray-600">Autorização:</span>
+                    <div className="flex flex-col sm:flex-row sm:gap-4 text-sm">
+                      <span className="text-gray-600 sm:min-w-[100px]">
+                        Autorização:
+                      </span>
                       <span className="font-medium">
                         {selectedTransaction.authorization_code}
                       </span>
                     </div>
-                    <div className="flex gap-4 text-sm">
-                      <span className="text-gray-600">Status:</span>
+                    <div className="flex flex-col sm:flex-row sm:gap-4 text-sm">
+                      <span className="text-gray-600 sm:min-w-[100px]">
+                        Status:
+                      </span>
                       <Badge
-                        className={`text-xs ${getStatusColor(selectedTransaction.status)}`}
+                        className={`text-xs w-fit ${getStatusColor(selectedTransaction.status)}`}
                       >
                         {getStatusLabel(selectedTransaction.status)}
                       </Badge>
@@ -189,16 +264,20 @@ export function TransactionsList({
                     Valores e Datas
                   </h4>
                   <div className="space-y-1">
-                    <div className="flex gap-4 text-sm">
-                      <span className="text-gray-600">Valor:</span>
+                    <div className="flex flex-col sm:flex-row sm:gap-4 text-sm">
+                      <span className="text-gray-600 sm:min-w-[120px]">
+                        Valor:
+                      </span>
                       <span className="font-medium text-green-600">
                         {formatCurrency(
                           Number.parseInt(selectedTransaction.amount)
                         )}
                       </span>
                     </div>
-                    <div className="flex gap-4 text-sm">
-                      <span className="text-gray-600">Data Transação:</span>
+                    <div className="flex flex-col sm:flex-row sm:gap-4 text-sm">
+                      <span className="text-gray-600 sm:min-w-[120px]">
+                        Data Transação:
+                      </span>
                       <span className="font-medium">
                         {(() => {
                           const isoDateString =
@@ -211,8 +290,10 @@ export function TransactionsList({
                         })()}
                       </span>
                     </div>
-                    <div className="flex gap-4 text-sm">
-                      <span className="text-gray-600">Data Pagamento:</span>
+                    <div className="flex flex-col sm:flex-row sm:gap-4 text-sm">
+                      <span className="text-gray-600 sm:min-w-[120px]">
+                        Data Pagamento:
+                      </span>
                       <span className="font-medium">
                         {(() => {
                           const isoDateString =
@@ -229,39 +310,46 @@ export function TransactionsList({
                 </div>
               </div>
 
-              {/* Informações do Pagamento */}
               <div className="space-y-2">
                 <h4 className="font-medium text-sm text-gray-900">
                   Detalhes do Pagamento
                 </h4>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <div className="flex gap-4 text-sm">
-                      <span className="text-gray-600">Bandeira:</span>
+                    <div className="flex flex-col sm:flex-row sm:gap-4 text-sm">
+                      <span className="text-gray-600 sm:min-w-[80px]">
+                        Bandeira:
+                      </span>
                       <span className="font-medium">
                         {selectedTransaction.card_brand}
                       </span>
                     </div>
-                    <div className="flex gap-4 text-sm">
-                      <span className="text-gray-600">Modalidade:</span>
+                    <div className="flex flex-col sm:flex-row sm:gap-4 text-sm">
+                      <span className="text-gray-600 sm:min-w-[80px]">
+                        Modalidade:
+                      </span>
                       <Badge
-                        className={`text-xs ${getPaymentMethodColor(selectedTransaction.payment_method)}`}
+                        className={`text-xs w-fit ${getPaymentMethodColor(selectedTransaction.payment_method)}`}
                       >
                         {getPaymentMethodLabel(
                           selectedTransaction.payment_method
                         )}
                       </Badge>
                     </div>
-                    <div className="flex gap-4 text-sm">
-                      <span className="text-gray-600">Parcelas:</span>
+                    <div className="flex flex-col sm:flex-row sm:gap-4 text-sm">
+                      <span className="text-gray-600 sm:min-w-[80px]">
+                        Parcelas:
+                      </span>
                       <span className="font-medium">
                         {selectedTransaction.installments}
                       </span>
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <div className="flex gap-4 text-sm">
-                      <span className="text-gray-600">Método Captura:</span>
+                    <div className="flex flex-col sm:flex-row sm:gap-4 text-sm">
+                      <span className="text-gray-600 sm:min-w-[120px]">
+                        Método Captura:
+                      </span>
                       <span className="font-medium">
                         {selectedTransaction.capture_method}
                       </span>
@@ -270,26 +358,29 @@ export function TransactionsList({
                 </div>
               </div>
 
-              {/* Informações do Estabelecimento */}
               <div className="space-y-2">
                 <h4 className="font-medium text-sm text-gray-900">
                   Estabelecimento
                 </h4>
                 <div className="space-y-1">
-                  <div className="flex gap-4 text-sm">
-                    <span className="text-gray-600">Nome:</span>
-                    <span className="font-medium">
+                  <div className="flex flex-col sm:flex-row sm:gap-4 text-sm">
+                    <span className="text-gray-600 sm:min-w-[80px]">Nome:</span>
+                    <span className="font-medium break-words">
                       {selectedTransaction.merchant_name}
                     </span>
                   </div>
-                  <div className="flex gap-4 text-sm">
-                    <span className="text-gray-600">Documento:</span>
+                  <div className="flex flex-col sm:flex-row sm:gap-4 text-sm">
+                    <span className="text-gray-600 sm:min-w-[80px]">
+                      Documento:
+                    </span>
                     <span className="font-medium">
                       {selectedTransaction.merchant_document_number}
                     </span>
                   </div>
-                  <div className="flex gap-4 text-sm">
-                    <span className="text-gray-600">Terminal:</span>
+                  <div className="flex flex-col sm:flex-row sm:gap-4 text-sm">
+                    <span className="text-gray-600 sm:min-w-[80px]">
+                      Terminal:
+                    </span>
                     <span className="font-medium">
                       {selectedTransaction.device_serial_number}
                     </span>
