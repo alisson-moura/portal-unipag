@@ -139,6 +139,10 @@ export class SincronizadorCeoPag implements OnApplicationBootstrap {
     } catch (error) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       this.logger.error('❌ Falha na sincronização.', error.stack);
+    } finally {
+      // ESTE BLOCO SERÁ EXECUTADO SEMPRE, liberando a trava
+      this.logger.log('Finalizando o processo de sincronização.');
+      this.isSyncRunning = false;
     }
   }
 
