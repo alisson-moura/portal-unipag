@@ -1,22 +1,22 @@
-import { useSearchParams } from "react-router-dom"; 
+import { useSearchParams } from "react-router-dom";
 import { useMemo } from "react";
-import { useRelatoriosControllerTransacoes } from "@/gen"; 
+import { useRelatoriosControllerTransacoes } from "@/gen";
 import { endOfDay, format, startOfDay } from "date-fns";
 import z from "zod";
 
 const filtersSchema = z.object({
   page: z.coerce.number().int().positive().default(1),
-  startDate: z.string().default(
-    format(startOfDay(new Date()), "yyyy-MM-dd HH:mm:ss")
-  ),
-  finishDate: z.string().default(
-    format(endOfDay(new Date()), "yyyy-MM-dd HH:mm:ss")
-  ),
-  mid: z.string().optional(), 
+  startDate: z
+    .string()
+    .default(format(startOfDay(new Date()), "yyyy-MM-dd HH:mm:ss")),
+  finishDate: z
+    .string()
+    .default(format(endOfDay(new Date()), "yyyy-MM-dd HH:mm:ss")),
+  mid: z.string().optional(),
 });
 
 export function useTransactionsReport() {
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const filters = useMemo(() => {
     const params = Object.fromEntries(searchParams.entries());
@@ -59,25 +59,38 @@ export function useTransactionsReport() {
 
   const handleMerchantChange = (mid: string) => {
     updateFilters({
-        mid,
-    })
-  }
-
-  const handleDateChange = (dateRange: { from: Date; to: Date }) => {
-    updateFilters({
-      startDate: format(startOfDay(dateRange.from), "yyyy-MM-dd HH:mm:ss"),
-      finishDate: format(endOfDay(dateRange.to), "yyyy-MM-dd HH:mm:ss"),
+      mid,
     });
   };
 
+  // --- FUNÇÕES DE DATA ATUALIZADAS ---
+
+  // Função para alterar a data de início (from)
+  const handleFromDateChange = (date?: Date) => {
+    updateFilters({
+      startDate: date
+        ? format(startOfDay(date), "yyyy-MM-dd HH:mm:ss")
+        : undefined, // Remove o filtro se a data for limpa
+    });
+  };
+
+  // Função para alterar a data de fim (to)
+  const handleToDateChange = (date?: Date) => {
+    updateFilters({
+      finishDate: date
+        ? format(endOfDay(date), "yyyy-MM-dd HH:mm:ss")
+        : undefined, // Remove o filtro se a data for limpa
+    });
+  };
 
   return {
-    data: data?.data, 
+    data: data?.data,
     isLoading,
     isError,
     filters,
     handlePageChange,
-    handleDateChange,
-    handleMerchantChange
+    handleToDateChange,
+    handleFromDateChange,
+    handleMerchantChange,
   };
 }

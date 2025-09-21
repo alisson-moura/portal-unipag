@@ -15,7 +15,8 @@ export function RelatorioGertorTransacoes() {
     isLoading,
     isError,
     filters,
-    handleDateChange,
+    handleFromDateChange,
+    handleToDateChange,
     handleMerchantChange,
   } = useTransactionsGestorReport();
 
@@ -37,8 +38,10 @@ export function RelatorioGertorTransacoes() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <h1 className="text-2xl font-bold">Relatório de Transações</h1>
         <TransactionFilters
-          currentDates={currentDates}
-          onDateChange={handleDateChange}
+          currentToDate={currentDates.to}
+          currentFromDate={currentDates.from}
+          onFromDateChange={handleFromDateChange}
+          onToDateChange={handleToDateChange}
           onMerchantChange={handleMerchantChange}
           currentMid={`${filters.mid}`}
         />

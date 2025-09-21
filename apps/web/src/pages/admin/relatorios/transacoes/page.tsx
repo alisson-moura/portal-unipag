@@ -1,5 +1,3 @@
-// Em: src/features/transactions-report/page.tsx
-
 import { Separator } from "@/components/ui/separator";
 import { useTransactionsReport } from "./hooks/use-transactions-report";
 import { TransactionFilters } from "./components/filters";
@@ -18,7 +16,8 @@ export function RelatorioTransacoes() {
     isError,
     filters,
     handlePageChange,
-    handleDateChange,
+    handleFromDateChange,
+    handleToDateChange,
     handleMerchantChange,
   } = useTransactionsReport();
 
@@ -40,8 +39,10 @@ export function RelatorioTransacoes() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <h1 className="text-2xl font-bold">Relatório de Transações</h1>
         <TransactionFilters
-          currentDates={currentDates}
-          onDateChange={handleDateChange}
+          currentToDate={currentDates.to}
+          currentFromDate={currentDates.from}
+          onFromDateChange={handleFromDateChange}
+          onToDateChange={handleToDateChange}
           onMerchantChange={handleMerchantChange}
           currentMid={`${filters.mid}`}
         />

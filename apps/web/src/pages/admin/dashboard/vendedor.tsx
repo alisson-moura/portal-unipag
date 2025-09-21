@@ -10,44 +10,50 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { DatePickerWithRange } from "@/components/ui/date-range-picker";
+import { DatePicker } from "@/components/ui/date-picker";
 import { format } from "date-fns";
 import { EstabelecimentosChart } from "@/components/estabelecimentos-chart";
 import { useRelatoriosControllerRecebimentosVendedor } from "@/gen";
-import { FallbackNoData, RecebiveisSkeleton } from "../financeiro/metric-skeleton";
+import {
+  FallbackNoData,
+  RecebiveisSkeleton,
+} from "../financeiro/metric-skeleton";
 import { formatCurrency } from "@/lib/format";
 import { DollarSign, TrendingUp, Wallet } from "lucide-react";
 import { MetricCard } from "../financeiro/metric-card";
 
-const formSchema = z.object({
-  range: z.object({
-    from: z.date(),
-    to: z.date(),
-  }),
-});
+const formSchema = z
+  .object({
+    from: z.date({ required_error: "Data inicial é obrigatória." }),
+    to: z.date({ required_error: "Data final é obrigatória." }),
+  })
+  .refine((data) => data.from <= data.to, {
+    message: "A data inicial não pode ser maior que a final.",
+    path: ["to"],
+  });
 
 type FormValues = z.infer<typeof formSchema>;
 
 export function VendedorDashboardPage({ id }: { id: string }) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
+    // 3. Ajustar os valores padrão para a nova estrutura do schema
     defaultValues: {
-      range: {
-        from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-        to: new Date(),
-      },
+      from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+      to: new Date(),
     },
   });
 
-  const range = form.watch("range");
+  // 4. Observar os campos individualmente
+  const { from, to } = form.watch();
 
   const { isLoading, data } = useRelatoriosControllerRecebimentosVendedor(id, {
-    start_date: format(range.from, 'yyyy-MM-dd'),
-    finish_date: format(range.to, 'yyyy-MM-dd')
-  })
+    start_date: format(from, "yyyy-MM-dd"),
+    finish_date: format(to, "yyyy-MM-dd"),
+  });
 
-  if (isLoading) return <RecebiveisSkeleton />
-  if (!data) return <FallbackNoData />
+  if (isLoading) return <RecebiveisSkeleton />;
+  if (!data) return <FallbackNoData />;
 
   const metrics = [
     {
@@ -73,27 +79,48 @@ export function VendedorDashboardPage({ id }: { id: string }) {
       Icon: Wallet,
       borderColor: "border-purple-500",
       iconColor: "text-purple-500",
-    }
+    },
   ];
 
   const onSubmit = (data: FormValues) => {
-    console.log(data);
+    // A função de submit não é necessária para a busca, mas mantemos para consistência
+    console.log("Valores do formulário:", data);
   };
 
   return (
     <div className="p-4">
-      <div className="flex gap-6 items-end">
+      <div className="flex flex-col sm:flex-row gap-6 items-end">
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+          {/* 5. Substituir o campo único por dois campos de data */}
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex items-end gap-4"
+          >
             <FormField
               control={form.control}
-              name="range"
+              name="from"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Período</FormLabel>
+                  <FormLabel>Data Inicial</FormLabel>
                   <FormControl>
-                    <DatePickerWithRange
+                    <DatePicker
+                      date={field.value}
+                      onDateChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="to"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Data Final</FormLabel>
+                  <FormControl>
+                    <DatePicker
                       date={field.value}
                       onDateChange={field.onChange}
                     />
@@ -120,8 +147,8 @@ export function VendedorDashboardPage({ id }: { id: string }) {
         ))}
       </div>
       <EstabelecimentosChart
-        start_date={format(range.from, 'yyyy-MM-dd')}
-        finish_date={format(range.to, 'yyyy-MM-dd')}
+        start_date={format(from, "yyyy-MM-dd")}
+        finish_date={format(to, "yyyy-MM-dd")}
         vendedor_id={id}
       />
     </div>

@@ -60,10 +60,23 @@ export function useTransactionsGestorReport() {
     });
   };
 
-  const handleDateChange = (dateRange: { from: Date; to: Date }) => {
+  // --- FUNÇÕES DE DATA ATUALIZADAS ---
+
+  // Função para alterar a data de início (from)
+  const handleFromDateChange = (date?: Date) => {
     updateFilters({
-      startDate: format(startOfDay(dateRange.from), "yyyy-MM-dd HH:mm:ss"),
-      finishDate: format(endOfDay(dateRange.to), "yyyy-MM-dd HH:mm:ss"),
+      startDate: date
+        ? format(startOfDay(date), "yyyy-MM-dd HH:mm:ss")
+        : undefined, // Remove o filtro se a data for limpa
+    });
+  };
+
+  // Função para alterar a data de fim (to)
+  const handleToDateChange = (date?: Date) => {
+    updateFilters({
+      finishDate: date
+        ? format(endOfDay(date), "yyyy-MM-dd HH:mm:ss")
+        : undefined, // Remove o filtro se a data for limpa
     });
   };
 
@@ -72,7 +85,8 @@ export function useTransactionsGestorReport() {
     isLoading,
     isError,
     filters,
-    handleDateChange,
+    handleFromDateChange,
+    handleToDateChange,
     handleMerchantChange,
   };
 }

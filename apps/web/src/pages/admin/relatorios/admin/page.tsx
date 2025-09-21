@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DatePickerWithRange } from "@/components/ui/date-range-picker";
+import { DatePicker } from "@/components/ui/date-picker";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import {
   useRelatoriosControllerResumoBandeiras,
@@ -10,7 +11,6 @@ import { formatCurrency } from "@/lib/format";
 import { endOfDay, format, parseISO, startOfDay } from "date-fns";
 import { CreditCard, DollarSign, TrendingDown, TrendingUp } from "lucide-react";
 import { useState } from "react";
-import type { DateRange } from "react-day-picker";
 import ResumoTransacoesStatusChart from "./grafico-transacoes";
 import { GraficoBandeiras } from "./grafico-bandeiras";
 import { ResumoTransacoesStatusChartSkeleton } from "./grafico-transacoes-skeleton";
@@ -28,12 +28,21 @@ export function AdminDashboard() {
     useRelatoriosControllerResumoPeriodo(range);
   const { data: transacoes } = useRelatoriosControllerResumoTransacoes(range);
 
-  const handleDateChange = (range?: DateRange) => {
-    if (range && range.from && range.to) {
-      setRange({
-        start_date: format(startOfDay(range.from), "yyyy-MM-dd HH:mm:ss"),
-        finish_date: format(endOfDay(range.to), "yyyy-MM-dd HH:mm:ss"),
-      });
+  const handleStartDateChange = (date?: Date) => {
+    if (date) {
+      setRange((currentRange) => ({
+        ...currentRange,
+        start_date: format(startOfDay(date), "yyyy-MM-dd HH:mm:ss"),
+      }));
+    }
+  };
+
+  const handleFinishDateChange = (date?: Date) => {
+    if (date) {
+      setRange((currentRange) => ({
+        ...currentRange,
+        finish_date: format(endOfDay(date), "yyyy-MM-dd HH:mm:ss"),
+      }));
     }
   };
 
@@ -41,18 +50,32 @@ export function AdminDashboard() {
     <div className="p-4 space-y-4">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        <DatePickerWithRange
-          date={{
-            from: parseISO(range.start_date),
-            to: parseISO(range.finish_date),
-          }}
-          onDateChange={handleDateChange}
-        />
+        {/* 3. Substituir o DatePickerWithRange pelos dois DatePicker individuais */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="grid gap-2 w-full sm:w-auto">
+            <Label htmlFor="start-date">Data Inicial</Label>
+            <DatePicker
+              id="start-date"
+              placeholder="Data Inicial"
+              date={parseISO(range.start_date)}
+              onDateChange={handleStartDateChange}
+            />
+          </div>
+          <div className="grid gap-2 w-full sm:w-auto">
+            <Label htmlFor="finish-date">Data Final</Label>
+            <DatePicker
+              id="finish-date"
+              placeholder="Data Final"
+              date={parseISO(range.finish_date)}
+              onDateChange={handleFinishDateChange}
+            />
+          </div>
+        </div>
       </div>
 
       <Separator />
 
-      {/* Cards de Faturamento */}
+      {/* Cards de Faturamento (sem alterações) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="border-l-4 border-l-blue-500 bg-gradient-to-r from-blue-50 to-white dark:from-blue-950/20 dark:to-background">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
