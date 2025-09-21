@@ -49,12 +49,6 @@ export function TransactionsList({
 
   return (
     <div className="space-y-4 p-2 sm:p-4">
-      <TransactionsPagination
-        page={Number.parseInt(`${paginatedTransactions.page}`)}
-        totalPages={Number.parseInt(`${paginatedTransactions.lastPage}`)}
-        onPageChange={onPageChange}
-      />
-
       <div className="hidden lg:block overflow-x-auto border rounded">
         <Table className="">
           <TableHeader>
@@ -212,6 +206,12 @@ export function TransactionsList({
           </div>
         ))}
       </div>
+
+      <TransactionsPagination
+        page={Number.parseInt(`${paginatedTransactions.page}`)}
+        totalPages={Number.parseInt(`${paginatedTransactions.lastPage}`)}
+        onPageChange={onPageChange}
+      />
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto">
